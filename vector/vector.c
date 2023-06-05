@@ -1,9 +1,5 @@
-#ifndef _STDIO_H
-# include <stdio.h>
-#endif
-
+#include <stdio.h>
 #include <stdlib.h>
-
 #include "vector.h"
 
 
@@ -17,8 +13,10 @@ Vector vecInit(void) {
 
 
 void vecAppend(Vector *vec, cint64 value) {
-    if (vec->length > 0)
-        vec->content = (int64_t *) realloc(vec->content, (sizeof(int64_t) * (vec->length + 1)));
+    if (vec->length > 0) {
+        size_t newSize = sizeof(int64_t) * (vec->length + 1);
+        vec->content = (int64_t *) realloc(vec->content, newSize);
+    }
     else
         vec->content = (int64_t *) malloc(sizeof(int64_t));
 

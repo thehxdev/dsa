@@ -30,9 +30,10 @@ bool vecIsEmpty(Vector *vec);
 int64_t vecFind(Vector *vec, cint64 value);
 int64_t vecBegin(Vector *vec);
 int64_t vecEnd(Vector *vec);
-void vecSort(Vector *vec, int64_t lower, int64_t upper);
+void vecSort(Vector *vec, cuint64 lower, cuint64 upper);
 void vecClean(Vector *vec);
 void vecCpy(Vector *vec1, Vector *vec2);
+void vecInsert(Vector *vec, cuint64 index, cint64 value);
 
 
 #endif

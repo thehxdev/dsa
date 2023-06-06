@@ -155,7 +155,7 @@ static int64_t partition(Vector *vec, int64_t lower, int64_t upper) {
 }
 
 
-void vecSort(Vector *vec, int64_t lower, int64_t upper) {
+void vecSort(Vector *vec, cuint64 lower, cuint64 upper) {
     // quicksort
     if (upper > lower) {
         int64_t partitionIndex = partition(vec, lower, upper);
@@ -182,6 +182,36 @@ void vecCpy(Vector *vec1, Vector *vec2) {
         for (int64_t i = 0; i < (int64_t)vec2->length; i++) {
             vecSet(vec1, i, vecAt(vec2, i));
         }
+    }
+}
+
+
+void vecInsert(Vector *vec, cuint64 index, cint64 value) {
+    if (index == vec->length)
+        vecAppend(vec, value);
+    else if (index > vec->length) {
+        fprintf(stderr, "ERROR: insertion index out of range\n");
+        exit(EXIT_FAILURE);
+    }
+    else {
+        u_int64_t i;
+        size_t new_vec_size = vec->length + 1;
+        int64_t *buff = (int64_t *) malloc(new_vec_size * sizeof(int64_t));
+        vec->content = (int64_t *) realloc(vec->content, new_vec_size * sizeof(int64_t));
+
+        for (i = 0; i < index; i++)
+            buff[i] = vecAt(vec, i);
+
+        buff[index] = value;
+
+        for (i = index; i < (u_int64_t) vec->length; i++)
+            buff[i + 1] = vecAt(vec, i);
+
+        for(i = 0; i < (u_int64_t) new_vec_size; i++)
+            vec->content[i] = buff[i];
+
+        vec->length = new_vec_size;
+        free(buff);
     }
 }
 

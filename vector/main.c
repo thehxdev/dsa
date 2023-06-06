@@ -7,7 +7,7 @@ int main(void) {
     vecAppend(&vec, 80);
     vecAppend(&vec, 23);
     vecAppend(&vec, 1);
-
+    vecInsert(&vec, 2, 10);
 
     vecPrint(&vec);
 

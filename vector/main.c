@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#define vecTypeNum 0
+
 #include "vector.h"
 
 int main(void) {
     Vector vec = vecInit();
-    vecAppend(&vec, 80);
-    vecAppend(&vec, 23);
-    vecAppend(&vec, 1);
-    vecInsert(&vec, 2, 10);
+    vecAppend(&vec, 10);
+    vecAppend(&vec, 34);
 
     vecPrint(&vec);
 

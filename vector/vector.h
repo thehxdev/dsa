@@ -26,7 +26,6 @@
 # include <stdbool.h>
 # include <sys/types.h>
 
-# define cint64 const int64_t
 # define cuint64 const u_int64_t
 
 struct vector {
@@ -61,7 +60,7 @@ void vecAppend(Vector *vec, const vecT value) {
 
 void vecSwap(Vector *vec, cuint64 index1, cuint64 index2) {
     if ( index1 < vec->length && index2 < vec->length ) {
-        cint64 num1 = vec->content[index1];
+        vecT num1 = vec->content[index1];
         vec->content[index1] = vec->content[index2];
         vec->content[index2] = num1;
     }
@@ -159,7 +158,7 @@ bool vecIsEmpty(Vector *vec) {
 }
 
 
-int64_t vecFind(Vector *vec, cint64 value) {
+int64_t vecFind(Vector *vec, vecT value) {
     for (int64_t i = 0; i < (int64_t)vec->length; i++) {
         if (vecAt(vec, i) == value)
             return i;
@@ -182,7 +181,7 @@ int64_t vecEnd(Vector *vec) {
 }
 
 
-#if (vecTypeNum < 2) || (vecTypeNum > 2)
+#if (vecTypeNum != 2)
 // partition function for vecSrot (quicksort)
 static int64_t partition(Vector *vec, int64_t lower, int64_t upper) {
     int64_t i = (lower - 1);

@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define vecTypeNum 0
-
+#define vecTnum 2
 #include "vector.h"
 
 int main(void) {
-    Vector vec = vecInit();
-    vecAppend(&vec, 10);
-    vecAppend(&vec, 34);
+    vector_t vec = vec_new();
 
-    vecPrint(&vec);
+    vec_append(&vec, "C is beautiful");
+    vec_append(&vec, "Rust");
+    vec_append(&vec, "Hello, World!");
 
-    vecDel(&vec);
+    vec_print(&vec);
+    vec_delete(&vec);
     return EXIT_SUCCESS;
 }

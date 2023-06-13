@@ -87,7 +87,7 @@ vec_get(&myVec, 0);
 
 Free up a vector's content that allocated on the heap.
 
-_ Args:
+- Args:
     - `vector_t *vec`: pointer to a vector
 
 - Ret: `void`
@@ -200,7 +200,7 @@ Search for a specific value in vector and return it's index if found, if it's no
     - `vecT val`: value to search for
 
 - Ret:
-    - if found -> `u_int64_t`: index of value
+    - if found -> `int64_t`: index of value
     - if not found -> `-1`
 
 

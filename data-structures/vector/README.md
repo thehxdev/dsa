@@ -223,7 +223,7 @@ if `vecTnum` is not 2, sort the vector with `quick-sort` algorithm.
 
 ```c
 /* Sort entire vector */
-vec_sort(&myVec, 0, myVec->length);
+vec_sort(&myVec, 0, myVec.length);
 ```
 
 

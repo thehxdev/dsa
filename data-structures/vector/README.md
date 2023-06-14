@@ -1,4 +1,4 @@
-# Vector
+# Vector (Not Updated for new version)
 
 A vector (Dynamic array) implementation that works with `int64_t`, `char` and also `char *` or string data types.
 

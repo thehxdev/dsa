@@ -292,8 +292,6 @@ vec_sort(&destVec, &srcVec);
 
 #### `vec_insert`
 
-**Currently only for vecTnum 0 and 1.**
-
 Inster a value to a specific index in the vector.
 
 - Args:

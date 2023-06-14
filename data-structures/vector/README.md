@@ -23,16 +23,16 @@ Calculate bytes of memory for `vector_t` data type. Used for `malloc`, `realloc`
 
 #### `VTOI`
 
-Convert a void pointer to a `int64_t` data type to it's actual value.
+Convert a void pointer of `int64_t` data type to it's actual value.
 
 
 #### `VTOCH`
 
-Convert a void pointer to a `char` data type to it's actual value.
+Convert a void pointer of `char` data type to it's actual value.
 
 #### `VTOS`
 
-Convert a void pointer to a `char *` data type (string) to it's actual value.
+Convert a void pointer of `char *` data type (string) to it's actual value.
 
 
 #### `INT64_T`, `CHAR_T`, `STR_T` and `VOID_T`

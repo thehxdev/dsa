@@ -2,6 +2,12 @@
 
 A **generic** implementation of vector (Dynamic Array) data structure.
 
+This vector can hold multiple data types at the time but some fucntions like `vec_print` will not
+work properly because `printf` function needs format specifiers.
+
+If You want to store multiple data types at once in one vector, set vector type to `VOID_T` when initializing or
+creating new vector.
+
 
 
 ## Macros

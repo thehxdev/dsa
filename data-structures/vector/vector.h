@@ -14,15 +14,16 @@
 #define CHECK_IDX(vecptr, idx) (((idx) < (vecptr->length)) || ((idx) == 0))
 
 
-#define VTOI(intptr) (*(int64_t *)(intptr)) // void to int64_t
-#define VTOCH(charptr) (*(char *)(charptr)) // void to char
-#define VTOS(strptr) ((char *)(strptr))   // void to char* (str)
+#define VTOI(intptr) (*(int64_t *)(intptr)) /* void to int64_t */
+#define VTOCH(charptr) (*(char *)(charptr)) /* void to char */
+#define VTOS(strptr) ((char *)(strptr)) /* void to char* (str) */
 
 
-// vector types
+/* vector types */
 #define INT64_T 0
 #define CHAR_T  1
 #define STR_T   2
+#define VOID_T  3
 
 struct __vector {
     u_int64_t length;
@@ -51,11 +52,15 @@ vector_t vec_new(u_int8_t vec_type) {
 
 /**
  * Initialize a vector pointer that allocated by malloc
+ * This will wipe vector's content.
  *
+ * @param pointer to a vector
  * @param vector type
  * @ret void
  */
 void vecptr_init(vector_t *vec, u_int8_t vec_type) {
+    if (vec->content)
+        free(vec->content);
     vec->content = NULL;
     vec->length  = 0;
     vec->type    = vec_type;
@@ -66,10 +71,10 @@ void vecptr_init(vector_t *vec, u_int8_t vec_type) {
  * append an item with type vecT to the end of vector
  * 
  * @param pointer to a vector
- * @param A value to append with type void*
- * @ret   0 if no error, -1 if error occures
+ * @param pointer to a value
+ * @ret   0 if no error, 1 if error occures
  */
-int8_t vec_append(vector_t *vec, void *value) {
+u_int8_t vec_append(vector_t *vec, void *value) {
     if (vec->content) {
         u_int64_t new_size = vec->length + 1;
         vec->content = (void **) realloc(vec->content, BYTES_OF_VOID(new_size));
@@ -78,7 +83,7 @@ int8_t vec_append(vector_t *vec, void *value) {
         vec->content = (void **) malloc(BYTES_OF_VOID(1));
 
     if (!vec->content)
-        return -1;
+        return 1;
 
     vec->content[vec->length] = (void *) value;
     vec->length++;
@@ -88,11 +93,11 @@ int8_t vec_append(vector_t *vec, void *value) {
 
 
 /**
- * get an index's value in the vector
+ * get an index's void pointer from vector
  *
  * @param pointer to a vector
  * @param an index
- * @ret   a value with type vecT
+ * @ret   void pointer to a value
  */
 void *vec_get(vector_t *vec, cuint64 idx) {
     if (CHECK_IDX(vec, idx))
@@ -102,6 +107,13 @@ void *vec_get(vector_t *vec, cuint64 idx) {
 }
 
 
+/**
+ * Remove an element at the end of the vector
+ * and return it's void pointer.
+ *
+ * @param pointer to a vector
+ * @ret   void pointer to a value
+ */
 void *vec_pop(vector_t *vec) {
     if (vec->length > 0) {
         u_int64_t last_idx = vec->length - 1;
@@ -117,7 +129,11 @@ void *vec_pop(vector_t *vec) {
 }
 
 /**
- * free up a vector's content
+ * free up a vector's content.
+ *
+ * If vector contains elements that allocated on
+ * the heap, it's your responsibility to free them
+ * before calling this function.
  *
  * @param pointer to a vector
  * @ret   void
@@ -133,6 +149,8 @@ void vec_delete(vector_t *vec) {
  * clean up a vector and make it empty
  *
  * @param pointer to a vector
+ * @param new vector's type
+ * @ret void
  */
 void vec_clean(vector_t *vec, u_int8_t vec_type) {
     vec_delete(vec);
@@ -175,6 +193,8 @@ void vec_print(vector_t *vec) {
                 printf("%c, ", VTOCH(vec_get(vec, i)));
             else if(vec->type == STR_T)
                 printf("\"%s\", ", VTOS(vec_get(vec, i)));
+            else if (vec->type == VOID_T)
+                printf("%p, ", vec_get(vec, i));
         }
         printf("}\n");
         fflush(stdout);
@@ -199,17 +219,19 @@ int64_t vec_sum(vector_t *vec) {
 
 
 /**
- * change a vector's index to a new value
+ * update an element to a new value
  *
  * @param pointer to a vector
  * @param an index
- * @param a value
- * @ret   void
+ * @param void pointer to a value
+ * @ret   0 if no error, 1 if error occures
  */
-void vec_set(vector_t *vec, cuint64 idx, void *val) {
+u_int8_t vec_set(vector_t *vec, cuint64 idx, void *val) {
     if (CHECK_IDX(vec, idx)) {
         vec->content[idx] = val;
+        return 0;
     }
+    return 1;
 }
 
 
@@ -325,10 +347,9 @@ void vec_cpy(vector_t *dest, vector_t *src) {
  *
  * @param pointer to vector
  * @param an index
- * @param a value
+ * @param void pointer to a value
  * @ret   void
 */
-// TODO: implement for char* too
 void vec_insert(vector_t *vec, cuint64 idx, void *val) {
     if (idx == vec->length)
         vec_append(vec, val);

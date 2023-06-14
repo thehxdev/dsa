@@ -1,34 +1,44 @@
-# Vector (Not Updated for new version)
+# Vector
 
-A vector (Dynamic array) implementation that works with `int64_t`, `char` and also `char *` or string data types.
+A **generic** implementation of vector (Dynamic Array) data structure.
+
+
 
 ## Macros
 
-#### `vecTnum`
+#### `cuint64`
 
-Used to specify the `vecT` macro. I used 2 macros for vector type because I can compare `vecTnum` with numbers
-to specify vector type.
+A short form of `const u_int64_t` type. Used for functions that require an index for their job.
 
-You define this macro once and you can't change it later. This meanse the vector can hold one data type at the time.
 
-- `vecTnum` valid numbers:
-    - `0` -> `int64_t`
-    - `1` -> `char`
-    - `2` -> `char *` (string)
+#### `BYTES_OF_VOID`
 
-```c
-#define vecTnum 0 /* for int64_t type */
-#include "vector.h"
-```
+Calculate bytes of memory for `void **` data type. Used for `malloc`, `realloc` and `calloc`.
 
-#### `vecT`
 
-Defines the vector's content type.
-Supported types:
+#### `BYTES_OF_VECTOR`
 
-- `int64_t`
-- `char`
-- `char *` (string)
+Calculate bytes of memory for `vector_t` data type. Used for `malloc`, `realloc` and `calloc`.
+
+
+#### `VTOI`
+
+Convert a void pointer to a `int64_t` data type to it's actual value.
+
+
+#### `VTOCH`
+
+Convert a void pointer to a `char` data type to it's actual value.
+
+#### `VTOS`
+
+Convert a void pointer to a `char *` data type (string) to it's actual value.
+
+
+#### `INT64_T`, `CHAR_T`, `STR_T` and `VOID_T`
+
+Macros to specify vector's type. `VOID_T` used for custom or other data types.
+
 
 
 ## Vector Methods
@@ -36,14 +46,29 @@ Supported types:
 #### `vec_new`
 
 Creates a new `vector_t` instance and returns it.
-You must initialize your vector befor using it or passing it to another fuctions.
+You must initialize your vector befor using it or passing it to other fuctions.
 
-- Args: `void`
-- Ret: `vector_t`: a new `vector_t` instance
+- Args:
+    - `u_int8_t`: vector type
+
+- Ret: 
+    - `vector_t`: a new `vector_t` instance
 
 ```c
-vector_t myVec = vec_new();
+/* Create a vector with void (not specified) type */
+vector_t myVec = vec_new(VOID_T);
 ```
+
+
+#### `vecptr_init`
+Initialize a vector pointer that allocated by malloc.
+**This function wipes vector's content.**
+
+- Args:
+    - `vector_t *vec`: pointer to a vector
+    - `u_int8_t`: vector type
+
+- Ret: `void`
 
 
 #### `vec_append`
@@ -52,29 +77,32 @@ Append a new value to vector.
 
 - Args:
     - `vector_t *vec`: pointer to a vector
-    - `vecT val`: new value with type `vecT`
+    - `void *val`: pointer to a value
 
-- Ret: `void`
+- Ret:
+    - `u_int8_t`: 0 if no errors, 1 if an error occures
 
 ```c
-vec_append(&myVec, 50) /* if vecTnum is 0 */
+vec_append(&myVec, 50) /* if vector type is INT64_T */
 
-vec_append(&myVec, 'a') /* if vecTnum is 1 */
+vec_append(&myVec, 'a') /* if vector type is CHAR_T */
 
-vec_append(&myVec, "Hello") /* if vecTnum is 2 */
+vec_append(&myVec, "Hello") /* if vector type is STR_T */
 ```
 
 
 #### `vec_get`
 
-Get the value stored at a specific index in the vector.
+Get a value's void pointer that stored at a specific index in the vector.
+Scince this function returns a void pointer, you must do a type casting
+befor assingning the return value to a specific variable.
 
 - Args:
     - `vector_t *vec`: pointer to a vector
     - `const int64_t idx`: value index
 
 - Ret:
-    - If no errors `vecT`
+    - If no errors `void *`
     - If error (index out of range) -> No return, exit program.
 
 ```c
@@ -83,9 +111,24 @@ vec_get(&myVec, 0);
 ```
 
 
+#### `vec_pop`
+
+
+Remove an element at the end of the vector and return it's void pointer.
+
+- Args:
+    - `vector_t *vec`:pointer to a vector
+
+- Ret:
+    - `void *`:void pointer to a value
+
+
+
 #### `vec_delete`
 
 Free up a vector's content that allocated on the heap.
+**If vector contains __elements__ that allocated on the heap,
+it's your responsibility to free them before calling this function.**
 
 - Args:
     - `vector_t *vec`: pointer to a vector
@@ -100,6 +143,8 @@ vec_delete(&myVec);
 #### `vec_clean`
 
 Free up a vector's content and initialize it again.
+**If vector contains __elements__ that allocated on the heap,
+it's your responsibility to free them before calling this function.**
 
 - Args:
     - `vector_t *vec`: pointer to a vector
@@ -130,7 +175,8 @@ vec_swap(&myVec, 0, 1);
 
 #### `vec_print`
 
-Print elements of a vector to `stdout`.
+Print elements of a vector to `stdout`. Only supported for `INT64_T`, `CHAR_T` and `STR_T` types.
+If vector type is `VOID_T` prints it's address.
 
 - Args:
     - `vector_t *vec`: pointer to a vector
@@ -144,7 +190,7 @@ vec_print(&myVec);
 
 #### `vec_sum`
 
-If `vecTnum` is **NOT** equal to `2` (it's not string) calculate sum of elements in the vector.
+Calculate sum of elements in the vector. only for `INT64_t` data type.
 
 - Args:
     - `vector_t *vec`: pointer to a vector
@@ -159,7 +205,7 @@ int64_t sum_of_vec = vec_sum(&myVec);
 
 #### `vec_set`
 
-Change an existing element's value to a new value. If given `idx` (index) is out of range, do nothing.
+Update an element to a new value. If given `idx` (index) is out of range, do nothing.
 
 - Args:
     - `vector_t *vec`: pointer to a vector
@@ -171,7 +217,6 @@ Change an existing element's value to a new value. If given `idx` (index) is out
 ```c
 /* 
  * change first element content to 10
- * (if vecTnum is 0)
  */
 vec_set(&myVec, 0, 10);
 ```
@@ -194,6 +239,7 @@ vec_reverse(&myVec);
 #### `vec_find`
 
 Search for a specific value in vector and return it's index if found, if it's not return `-1`.
+**Not working for `VOID_T` data type.**
 
 - Args:
     - `vector_t *vec`: pointer to a vector
@@ -212,7 +258,8 @@ vec_find(&myVec, 1);
 
 #### `vec_sort`
 
-if `vecTnum` is not 2, sort the vector with `quick-sort` algorithm.
+Sort the vector with `quick-sort` algorithm.
+**Only works for `INT64_T` data type.**
 
 - Args:
     - `vector_t *vec`: pointer to a vector
@@ -223,7 +270,7 @@ if `vecTnum` is not 2, sort the vector with `quick-sort` algorithm.
 
 ```c
 /* Sort entire vector */
-vec_sort(&myVec, 0, myVec.length);
+vec_sort(&myVec, 0, (myVec.length - 1));
 ```
 
 
@@ -252,7 +299,7 @@ Inster a value to a specific index in the vector.
 - Args:
     - `vector_t *vec`: pointer to a vector
     - `const u_int64_t idx`: index to add element
-    - `vecT`: value
+    - `void *val`: pointer to a value
 
 - Ret: `void`
 

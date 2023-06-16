@@ -1,10 +1,8 @@
-# Vector
+# Vector (Needs review)
 
 A **generic** implementation of vector (Dynamic Array) data structure.
 
-
-If You want to store multiple data types at once in one vector, set vector type to `VOID_T` when initializing or
-creating new vector.
+If You want to store multiple data types at once in one vector, set vector type to `VOID_T` when initializing or creating new vector.
 
 
 

@@ -2,8 +2,6 @@
 
 A **generic** implementation of vector (Dynamic Array) data structure.
 
-This vector can hold multiple data types at one time but some functions like `vec_print` will not
-work properly because `printf` function needs format specifiers.
 
 If You want to store multiple data types at once in one vector, set vector type to `VOID_T` when initializing or
 creating new vector.
@@ -76,6 +74,14 @@ Initialize a vector pointer that allocated by malloc.
 
 - Ret: `void`
 
+```c
+vector_t *vec = (vector_t *) malloc(sizeof(vector_t));
+vecptr_init(vec, INT64_T);
+
+vec_delete(vec);
+free(vec);
+```
+
 
 #### `vec_append`
 
@@ -84,6 +90,7 @@ Append a new value to vector.
 - Args:
     - `vector_t *vec`: pointer to a vector
     - `void *val`: pointer to a value
+    - `const u_int64_t size`: bytes of value (use `strlen()` for `STR_T` type)
 
 - Ret:
     - `u_int8_t`: 0 if no errors, 1 if an error occures
@@ -120,7 +127,8 @@ vec_get(&myVec, 0);
 #### `vec_pop`
 
 
-Remove an element at the end of the vector and return it's void pointer.
+Remove an element at the end of the vector and return a pointer to it.
+Don't forget to call `free()` on returned pointer.
 
 - Args:
     - `vector_t *vec`:pointer to a vector
@@ -128,6 +136,28 @@ Remove an element at the end of the vector and return it's void pointer.
 - Ret:
     - `void *`:void pointer to a value
 
+```c
+int64_t x = vec_pop(&myVec);
+
+/* code... */
+
+free(x);
+```
+
+
+#### `vec_remove`
+
+Remove an element at the end of the vector and call `free()` on it.
+
+- Args:
+    - `vector_t *vec`:pointer to a vector
+
+- Ret:
+    - `void *`:void pointer to a value
+
+```c
+vec_remove(&myVec);
+```
 
 
 #### `vec_delete`
@@ -179,36 +209,6 @@ vec_swap(&myVec, 0, 1);
 ```
 
 
-#### `vec_print`
-
-Print elements of a vector to `stdout`. Only supported for `INT64_T`, `CHAR_T` and `STR_T` types.
-If vector type is `VOID_T` prints it's address.
-
-- Args:
-    - `vector_t *vec`: pointer to a vector
-
-- Ret: `void`
-
-```c
-vec_print(&myVec);
-```
-
-
-#### `vec_sum`
-
-Calculate sum of elements in the vector. only for `INT64_t` data type.
-
-- Args:
-    - `vector_t *vec`: pointer to a vector
-
-- Ret:
-    - `int64_t`: sum of elements
-
-```c
-int64_t sum_of_vec = vec_sum(&myVec);
-```
-
-
 #### `vec_set`
 
 Update an element to a new value. If given `idx` (index) is out of range, do nothing.
@@ -216,7 +216,8 @@ Update an element to a new value. If given `idx` (index) is out of range, do not
 - Args:
     - `vector_t *vec`: pointer to a vector
     - `const u_int64_t idx`: index of element
-    - `vecT val`: new value
+    - `void *val`: new value
+    - `const u_int64_t size`: bytes of value (use `strlen()` for `STR_T` type)
 
 - Ret: `void`
 
@@ -224,7 +225,8 @@ Update an element to a new value. If given `idx` (index) is out of range, do not
 /* 
  * change first element content to 10
  */
-vec_set(&myVec, 0, 10);
+int64_t x = 10;
+vec_set(&myVec, 0, &x, sizeof(int64_t));
 ```
 
 
@@ -239,26 +241,6 @@ Reverse a vector.
 
 ```c
 vec_reverse(&myVec);
-```
-
-
-#### `vec_find`
-
-Search for a specific value in vector and return it's index if found, if it's not return `-1`.
-**Not working for `VOID_T` data type.**
-
-- Args:
-    - `vector_t *vec`: pointer to a vector
-    - `vecT val`: value to search for
-
-- Ret:
-    - if found -> `int64_t`: index of value
-    - if not found -> `-1`
-
-
-```c
-/* try to find number 1 in vector */
-vec_find(&myVec, 1);
 ```
 
 
@@ -293,22 +275,5 @@ Copy a vector to another vector.
 
 ```c
 vec_sort(&destVec, &srcVec);
-```
-
-
-#### `vec_insert`
-
-Inster a value to a specific index in the vector.
-
-- Args:
-    - `vector_t *vec`: pointer to a vector
-    - `const u_int64_t idx`: index to add element
-    - `void *val`: pointer to a value
-
-- Ret: `void`
-
-```c
-/* Insert number 5 to index 1 */
-vec_insert(&myVec, 1, 5);
 ```
 

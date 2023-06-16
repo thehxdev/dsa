@@ -3,38 +3,19 @@
 #include "vector.h"
 
 int main(void) {
-    vector_t svec = vec_new(STR_T);
     vector_t ivec = vec_new(INT64_T);
 
-    {
-        int64_t x = 50;
-        int64_t y = 89;
-        vec_append(&ivec, &x);
-        vec_insert(&ivec, 1, &y);
-        {
-            int64_t z = 1;
-            vec_append(&ivec, &z);
-            int64_t k = VTOI(vec_pop(&ivec));
-            printf("k = %ld\n", k);
-        }
-    }
-    vec_print(&ivec);
+    for (u_int64_t i = 0; i < 10; i++)
+        vec_append(&ivec, (int64_t*)&i, sizeof(int64_t));
 
-    vec_append(&svec, "C is beautiful");
-    vec_append(&svec, "Rust");
-    vec_append(&svec, "Hello, World!");
+    int64_t x = 20;
+    vec_insert(&ivec, 0, &x, sizeof(int64_t));
 
-    vec_set(&svec, 0, "Hi");
-    vec_insert(&svec, 2, "TypeScript");
+    vec_sort(&ivec, 0, ivec.length - 1);
 
-    vec_print(&svec);
+    for (u_int64_t i = 0; i < ivec.length; i++)
+        printf("%ld\n", *(int64_t *)vec_get(&ivec, i));
 
-    char *str1 = VTOS(vec_pop(&svec));
-    printf("Last in svec = \"%s\"\n", str1);
-
-    vec_print(&svec);
-
-    vec_delete(&svec);
     vec_delete(&ivec);
     return EXIT_SUCCESS;
 }

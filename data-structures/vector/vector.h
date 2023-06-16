@@ -72,9 +72,10 @@ void vecptr_init(vector_t *vec, u_int8_t vec_type) {
  * 
  * @param pointer to a vector
  * @param pointer to a value
+ * @param bytes of value (use `strlen()` for `STR_T` type)
  * @ret   0 if no error, 1 if error occures
  */
-u_int8_t vec_append(vector_t *vec, void *value) {
+u_int8_t vec_append(vector_t *vec, void *value, cuint64 size) {
     if (vec->content) {
         u_int64_t new_size = vec->length + 1;
         vec->content = (void **) realloc(vec->content, BYTES_OF_VOID(new_size));
@@ -85,7 +86,8 @@ u_int8_t vec_append(vector_t *vec, void *value) {
     if (!vec->content)
         return 1;
 
-    vec->content[vec->length] = (void *) value;
+    vec->content[vec->length] = (void *) malloc(size);
+    memcpy(vec->content[vec->length], value, size);
     vec->length++;
 
     return 0;
@@ -97,19 +99,20 @@ u_int8_t vec_append(vector_t *vec, void *value) {
  *
  * @param pointer to a vector
  * @param an index
- * @ret   void pointer to a value
+ * @ret   void pointer to a value or NULL
  */
 void *vec_get(vector_t *vec, cuint64 idx) {
     if (CHECK_IDX(vec, idx))
-        return vec->content[idx];
-    fprintf(stderr, "ERROR: cannot get value (index %ld out of range)\n", idx);
-    exit(1);
+        return ((void *) vec->content[idx]);
+    return NULL;
 }
 
 
 /**
  * Remove an element at the end of the vector
  * and return it's void pointer.
+ *
+ * don't forget to call `free()` on returned value.
  *
  * @param pointer to a vector
  * @ret   void pointer to a value
@@ -128,6 +131,24 @@ void *vec_pop(vector_t *vec) {
     return NULL;
 }
 
+/*
+ * Remove an element at the end of the vector and call `free()` on it.
+ *
+ * @param pointer to a vector
+ * @ret   void pointer to a value
+ */
+void vec_remove(vector_t *vec) {
+    if (vec->length > 0) {
+        u_int64_t last_idx = vec->length - 1;
+        u_int64_t new_size = vec->length - 1;
+        free(vec->content[last_idx]);
+        vec->content = (void **) realloc(vec->content, BYTES_OF_VOID(new_size));
+        vec->length--;
+
+    }
+}
+
+
 /**
  * free up a vector's content.
  *
@@ -140,6 +161,8 @@ void *vec_pop(vector_t *vec) {
  */
 void vec_delete(vector_t *vec) {
     if (vec->content) {
+        for (u_int64_t i = 0; i < vec->length; i++)
+            free(vec->content[i]);
         free(vec->content);
     }
 }
@@ -161,6 +184,26 @@ void vec_clean(vector_t *vec, u_int8_t vec_type) {
 
 
 /**
+ * update an element to a new value
+ *
+ * @param pointer to a vector
+ * @param an index
+ * @param void pointer to a value
+ * @param bytes of value (use `strlen()` for `STR_T` type)
+ * @ret   0 if no error, 1 if error occures
+ */
+u_int8_t vec_set(vector_t *vec, cuint64 idx, void *val, cuint64 size) {
+    if (CHECK_IDX(vec, idx)) {
+        if (vec->content[idx]) free(vec->content[idx]);
+        vec->content[idx] = (void *) malloc(size);
+        memcpy(vec->content[idx], val, size);
+        return 0;
+    }
+    return 1;
+}
+
+
+/**
  * swap tow elements in the vector
  *
  * @param pointer to a vector
@@ -174,64 +217,6 @@ void vec_swap(vector_t *vec, cuint64 idx1, cuint64 idx2) {
         vec->content[idx1] = vec->content[idx2];
         vec->content[idx2] = tmpval;
     }
-}
-
-
-/**
- * print a vector
- *
- * @param pointer to a vector
- */
-void vec_print(vector_t *vec) {
-    if (vec->length > 0) {
-        printf("{ ");
-        u_int64_t i;
-        for (i = 0; i < vec->length; i++) {
-            if (vec->type == INT64_T)
-                printf("%ld, ", VTOI(vec_get(vec, i)));
-            else if (vec->type == CHAR_T)
-                printf("%c, ", VTOCH(vec_get(vec, i)));
-            else if(vec->type == STR_T)
-                printf("\"%s\", ", VTOS(vec_get(vec, i)));
-            else if (vec->type == VOID_T)
-                printf("%p, ", vec_get(vec, i));
-        }
-        printf("}\n");
-        fflush(stdout);
-    }
-}
-
-
-/**
- * if vecT is not (char*) and (char) return sum of
- * all the values in the vector
- *
- * @param pointer to a vector
- * @ret   an int64
- */
-int64_t vec_sum(vector_t *vec) {
-    int64_t sum = 0;
-    if (vec->type == 0)
-        for (u_int64_t i = 0; i < vec->length; i++)
-            sum += VTOI(vec_get(vec, i));
-    return sum;
-}
-
-
-/**
- * update an element to a new value
- *
- * @param pointer to a vector
- * @param an index
- * @param void pointer to a value
- * @ret   0 if no error, 1 if error occures
- */
-u_int8_t vec_set(vector_t *vec, cuint64 idx, void *val) {
-    if (CHECK_IDX(vec, idx)) {
-        vec->content[idx] = val;
-        return 0;
-    }
-    return 1;
 }
 
 
@@ -251,55 +236,33 @@ void vec_reverse(vector_t *vec) {
     }
 
     for (u_int64_t i = 0; i < vec->length; i++) {
-        vec_set(vec, i, buffer[i]);
+        if (vec->type == STR_T) {
+            vec_set(vec, i, buffer[i], strlen(buffer[i]));
+            continue;
+        }
+        vec_set(vec, i, buffer[i], sizeof(buffer[i]));
     }
 
     free(buffer);
 }
 
 
-/**
- * search for a value in vector
- *
- * @param pointer to a vector
- * @param value that you are searching for
- * @ret   index of the value (-1 if not found)
-*/
-int64_t vec_find(vector_t *vec, void *val) {
-    for (u_int64_t i = 0; i < vec->length; i++) {
-        if (vec->type == INT64_T) {
-            if (VTOI(vec_get(vec, i)) == VTOI(val))
-                return i;
-        }
-        else if (vec->type == CHAR_T) {
-            if (VTOCH(vec_get(vec, i)) == VTOCH(val))
-                return i;
-        }
-        else if (vec->type == STR_T) {
-            if (strcmp(VTOS(vec_get(vec, i)), VTOS(val)) == 0)
-                return i;
-        }
-    }
-    return -1;
-}
-
 // partition function for vec_sort (quicksort)
 static int64_t partition(vector_t *vec, int64_t lower, int64_t upper) {
     int64_t i = (lower - 1);
-    if (vec->type != STR_T) {
-        const int64_t pivot = VTOI(vec_get(vec, upper));
+    const int64_t pivot = VTOI(vec_get(vec, upper));
 
-        for (int64_t j = lower; j < upper; j++) {
-            if (VTOI(vec_get(vec, j)) <= pivot) {
-                i++;
-                vec_swap(vec, i, j);
-            }
+    for (int64_t j = lower; j < upper; j++) {
+        if (VTOI(vec_get(vec, j)) <= pivot) {
+            i++;
+            vec_swap(vec, i, j);
         }
-
-        vec_swap(vec, i + 1, upper);
     }
+
+    vec_swap(vec, i + 1, upper);
     return (i + 1);
 }
+
 
 
 /**
@@ -312,13 +275,14 @@ static int64_t partition(vector_t *vec, int64_t lower, int64_t upper) {
  */
 void vec_sort(vector_t *vec, cuint64 lower, cuint64 upper) {
     // quicksort
-    if (vec->type != STR_T && upper > lower) {
+    if (upper > lower) {
         int64_t partitionIndex = partition(vec, lower, upper);
 
         vec_sort(vec, lower, partitionIndex - 1);
         vec_sort(vec, partitionIndex + 1, upper);
     }
 }
+
 
 
 /**
@@ -330,14 +294,19 @@ void vec_sort(vector_t *vec, cuint64 lower, cuint64 upper) {
  * @ret   void
 */
 void vec_cpy(vector_t *dest, vector_t *src) {
-    if (src->length > 0) {
+    if (src->length > 0 && src->type == dest->type) {
         if (dest->content)
             vec_clean(dest, src->type);
         dest->content = (void **) malloc(BYTES_OF_VOID(src->length));
 
         dest->length = src->length;
-        for (u_int64_t i = 0; i < src->length; i++)
-            vec_set(dest, i, vec_get(src, i));
+        for (u_int64_t i = 0; i < src->length; i++) {
+            if (src->type == STR_T) {
+                vec_set(dest, i, vec_get(src, i), strlen(vec_get(src, i)));
+                continue;
+            }
+            vec_set(dest, i, vec_get(src, i), sizeof(vec_get(src, i)));
+        }
     }
 }
 
@@ -350,9 +319,9 @@ void vec_cpy(vector_t *dest, vector_t *src) {
  * @param void pointer to a value
  * @ret   void
 */
-void vec_insert(vector_t *vec, cuint64 idx, void *val) {
+void vec_insert(vector_t *vec, cuint64 idx, void *val, cuint64 size) {
     if (idx == vec->length)
-        vec_append(vec, val);
+        vec_append(vec, val, size);
     else if (idx > vec->length) {
         fprintf(stderr, "ERROR: insertion index out of range\n");
         exit(EXIT_FAILURE);
@@ -366,13 +335,16 @@ void vec_insert(vector_t *vec, cuint64 idx, void *val) {
         for (i = 0; i < idx; i++)
             buff[i] = vec_get(vec, i);
 
-        buff[idx] = val;
+        buff[idx] = (void *) malloc(size);
+        memcpy(buff[idx], val, size);
 
         for (i = idx; i < vec->length; i++)
             buff[i + 1] = vec_get(vec, i);
 
         for(i = 0; i < (u_int64_t) new_vec_size; i++)
             vec->content[i] = buff[i];
+
+        vec_set(vec, idx, val, size);
 
         vec->length = new_vec_size;
         free(buff);

@@ -236,11 +236,7 @@ void vec_reverse(vector_t *vec) {
     }
 
     for (u_int64_t i = 0; i < vec->length; i++) {
-        if (vec->type == STR_T) {
-            vec_set(vec, i, buffer[i], strlen(buffer[i]));
-            continue;
-        }
-        vec_set(vec, i, buffer[i], sizeof(buffer[i]));
+        vec->content[i] = buffer[i];
     }
 
     free(buffer);

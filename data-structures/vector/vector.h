@@ -12,6 +12,7 @@
 #define BYTES_OF_VOID(bytes) (sizeof(void **) * (bytes))
 #define BYTES_OF_VECTOR(bytes) (sizeof(vector_t) * (bytes))
 #define CHECK_IDX(vecptr, idx) (((idx) < (vecptr->length)) || ((idx) == 0))
+#define ARR_SIZE(arr) ((sizeof(arr)) / (sizeof(arr[0])))
 
 
 #define VTOI(intptr) (*(int64_t *)(intptr)) /* void to int64_t */

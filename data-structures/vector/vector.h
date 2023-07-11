@@ -299,7 +299,7 @@ void vec_cpy(vector_t *dest, vector_t *src) {
         dest->length = src->length;
         for (u_int64_t i = 0; i < src->length; i++) {
             if (src->type == STR_T) {
-                vec_set(dest, i, vec_get(src, i), strlen(vec_get(src, i)));
+                vec_set(dest, i, vec_get(src, i), strlen(VTOS(vec_get(src, i))));
                 continue;
             }
             vec_set(dest, i, vec_get(src, i), sizeof(vec_get(src, i)));

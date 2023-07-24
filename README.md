@@ -3,5 +3,5 @@
 My implementation of algorithms and data structures.
 
 - Data Structures
-    - [Vector](https://github.com/thehxdev/algo-dt/tree/main/data-structures/vector)
+    - [Vector](https://github.com/thehxdev/algo-dt/tree/main/data-structures/c/vector)
 

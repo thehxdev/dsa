@@ -257,7 +257,8 @@ static int64_t partition(vector_t *vec, int64_t lower, int64_t upper) {
     }
 
     vec_swap(vec, i + 1, upper);
-    return (i + 1);
+
+    return (i < 0) ? 1 : (i + 1);
 }
 
 

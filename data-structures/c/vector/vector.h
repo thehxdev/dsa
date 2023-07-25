@@ -1,203 +1,180 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <memory.h>
+#include <stdint.h>
 #include <stdbool.h>
-#include <sys/types.h>
 
 
-#define cuint64 const u_int64_t
-#define BYTES_OF_VOID(bytes) (sizeof(void **) * (bytes))
-#define BYTES_OF_VECTOR(bytes) (sizeof(vector_t) * (bytes))
-#define CHECK_IDX(vecptr, idx) (((idx) < (vecptr->length)) || ((idx) == 0))
-#define ARR_SIZE(arr) ((sizeof(arr)) / (sizeof(arr[0])))
+// Vector's default capacity
+#define DEFAULT_CAP 20
+
+// Simple and ready to use macros
+#define VTOI(intptr) (*(int*)(intptr))    // void pointer to int
+#define VTOD(intptr) (*(double*)(intptr)) // void pointer to double
+#define VTOC(charptr) (*(char*)(charptr)) // void pointer to char
+#define VTOS(strptr) ((char*)(strptr))    // void pointer to char* (string)
 
 
-#define VTOI(intptr) (*(int64_t *)(intptr)) /* void to int64_t */
-#define VTOCH(charptr) (*(char *)(charptr)) /* void to char */
-#define VTOS(strptr) ((char *)(strptr)) /* void to char* (str) */
+struct __element {
+    void *data;
+    size_t size;
+};
+typedef struct __element Element;
 
-
-/* vector types */
-#define INT64_T 0
-#define CHAR_T  1
-#define STR_T   2
-#define VOID_T  3
 
 struct __vector {
-    u_int64_t length;
-    void **content;
-    u_int8_t type;
+    // vector length
+    size_t len;
+
+    // vector capacity
+    size_t cap;
+
+    // list of Element pointers
+    Element **elems;
 };
+typedef struct __vector Vector;
 
-typedef struct __vector vector_t;
 
-
-/**
- * Create a new vector
- *
- * @param vector type
- * @ret a vector type instance
- */
-vector_t vec_new(u_int8_t vec_type) {
-    vector_t new_vec;
-    new_vec.content = NULL;
-    new_vec.length  = 0;
-    new_vec.type    = vec_type;
-
-    return new_vec;
+static bool check_idx(Vector *vp, size_t idx) {
+    return (idx < vp->len) ? true : false;
 }
 
 
 /**
- * Initialize a vector pointer that allocated by malloc
- * This will wipe vector's content.
- *
- * @param pointer to a vector
- * @param vector type
- * @ret void
+ * Create and initialize a new vector
  */
-void vecptr_init(vector_t *vec, u_int8_t vec_type) {
-    if (vec->content)
-        free(vec->content);
-    vec->content = NULL;
-    vec->length  = 0;
-    vec->type    = vec_type;
+Vector *vec_new() {
+    // new vector
+    Vector *nv = (Vector*) malloc(sizeof(Vector));
+
+    nv->len   = 0;
+    nv->cap   = DEFAULT_CAP;
+    nv->elems = (Element**) calloc(sizeof(Element*), nv->cap);
+
+    return nv;
 }
 
 
 /**
- * append an item with type vecT to the end of vector
- * 
- * @param pointer to a vector
- * @param pointer to a value
- * @param bytes of value (use `strlen()` for `STR_T` type)
- * @ret   0 if no error, 1 if error occures
+ * Get data stored in an Element from vector
  */
-u_int8_t vec_append(vector_t *vec, void *value, cuint64 size) {
-    if (vec->content) {
-        u_int64_t new_size = vec->length + 1;
-        vec->content = (void **) realloc(vec->content, BYTES_OF_VOID(new_size));
+void *vec_getData(Vector *vp, size_t idx) {
+    if (check_idx(vp, idx)) {
+        return vp->elems[idx]->data;
     }
-    else
-        vec->content = (void **) malloc(BYTES_OF_VOID(1));
 
-    if (!vec->content)
+    return NULL;
+}
+
+
+/**
+ * Get an Element stored in vector
+ */
+Element *vec_getElement(Vector *vp, size_t idx) {
+    if (check_idx(vp, idx)) {
+        return vp->elems[idx];
+    }
+
+    return NULL;
+}
+
+
+/**
+ * Free and delete a vector from memory
+ */
+void vec_free(Vector *vp) {
+    if (vp->elems && vp) {
+        for (uint32_t i = 0; i < vp->len; i++) {
+            free(vp->elems[i]->data);
+            free(vp->elems[i]);
+        }
+        free(vp->elems);
+
+        free(vp);
+    }
+}
+
+
+/*
+ * Clear a vector and re-initialize it
+ */
+void vec_clean(Vector *vp) {
+    if (vp->elems && vp) {
+        for (uint32_t i = 0; i < vp->len; i++) {
+            free(vp->elems[i]->data);
+            free(vp->elems[i]);
+        }
+        free(vp->elems);
+
+        vp->len   = 0;
+        vp->cap   = DEFAULT_CAP;
+        vp->elems = (Element**) calloc(sizeof(Element*), vp->cap);
+    }
+}
+
+
+/**
+ * Append a new value to vector
+ */
+int vec_append(Vector *vp, void *val, size_t size) {
+    if (vp->len % vp->cap == 0) {
+        size_t new_size = sizeof(Element*) * (vp->len + vp->cap);
+        vp->elems = (Element**) realloc(vp->elems, new_size);
+        if (vp->elems == NULL)
+            return 1;
+    }
+
+    vp->elems[vp->len] = (Element*) malloc(sizeof(Element));
+    if (vp->elems[vp->len] == NULL)
         return 1;
 
-    vec->content[vec->length] = (void *) malloc(size);
-    memcpy(vec->content[vec->length], value, size);
-    vec->length++;
+    vp->elems[vp->len]->data = (void*) malloc(size);
+    if (vp->elems[vp->len]->data == NULL)
+        return 1;
 
+    memcpy(vp->elems[vp->len]->data, val, size);
+    vp->elems[vp->len]->size = size;
+    
+    vp->len += 1;
     return 0;
 }
 
 
 /**
- * get an index's void pointer from vector
- *
- * @param pointer to a vector
- * @param an index
- * @ret   void pointer to a value or NULL
+ * Swap tow elements in vector
  */
-void *vec_get(vector_t *vec, cuint64 idx) {
-    if (CHECK_IDX(vec, idx))
-        return ((void *) vec->content[idx]);
-    return NULL;
-}
-
-
-/**
- * Remove an element at the end of the vector
- * and return it's void pointer.
- *
- * don't forget to call `free()` on returned value.
- *
- * @param pointer to a vector
- * @ret   void pointer to a value
- */
-void *vec_pop(vector_t *vec) {
-    if (vec->length > 0) {
-        u_int64_t last_idx = vec->length - 1;
-        u_int64_t new_size = vec->length - 1;
-        void *idx_val = vec_get(vec, last_idx);
-        vec->content[last_idx] = NULL;
-        vec->content = (void **) realloc(vec->content, BYTES_OF_VOID(new_size));
-        vec->length--;
-
-        return idx_val;
-    }
-    return NULL;
-}
-
-/*
- * Remove an element at the end of the vector and call `free()` on it.
- *
- * @param pointer to a vector
- * @ret   void pointer to a value
- */
-void vec_remove(vector_t *vec) {
-    if (vec->length > 0) {
-        u_int64_t last_idx = vec->length - 1;
-        u_int64_t new_size = vec->length - 1;
-        free(vec->content[last_idx]);
-        vec->content = (void **) realloc(vec->content, BYTES_OF_VOID(new_size));
-        vec->length--;
-
+void vec_swap(Vector *vp, size_t idx1, size_t idx2) {
+    if (check_idx(vp, idx1), check_idx(vp, idx2)) {
+        Element *tmp = vec_getElement(vp, idx1);
+        vp->elems[idx1] = vec_getElement(vp, idx2);
+        vp->elems[idx2] = tmp;
     }
 }
 
 
 /**
- * free up a vector's content.
- *
- * If vector contains elements that allocated on
- * the heap, it's your responsibility to free them
- * before calling this function.
- *
- * @param pointer to a vector
- * @ret   void
+ * Set a new value to an element in vector
  */
-void vec_delete(vector_t *vec) {
-    if (vec->content) {
-        for (u_int64_t i = 0; i < vec->length; i++)
-            free(vec->content[i]);
-        free(vec->content);
-    }
-}
+int vec_set(Vector *vp, size_t idx, void *val, size_t size) {
+    if (check_idx(vp, idx)) {
+        if (vp->elems[idx])
+            free(vec_getElement(vp, idx));
 
+        if (vp->elems[idx]->data)
+            free(vec_getData(vp, idx));
 
-/**
- * clean up a vector and make it empty
- *
- * @param pointer to a vector
- * @param new vector's type
- * @ret void
- */
-void vec_clean(vector_t *vec, u_int8_t vec_type) {
-    vec_delete(vec);
-    vec->content = NULL;
-    vec->length  = 0;
-    vec->type    = vec_type;
-}
+        vp->elems[idx] = (Element*) malloc(sizeof(Element));
+        if (vp->elems[idx] == NULL)
+            return 1;
 
+        vp->elems[idx]->data = (void*) malloc(size);
+        if (vp->elems[idx]->data == NULL)
+            return 1;
 
-/**
- * update an element to a new value
- *
- * @param pointer to a vector
- * @param an index
- * @param void pointer to a value
- * @param bytes of value (use `strlen()` for `STR_T` type)
- * @ret   0 if no error, 1 if error occures
- */
-u_int8_t vec_set(vector_t *vec, cuint64 idx, void *val, cuint64 size) {
-    if (CHECK_IDX(vec, idx)) {
-        if (vec->content[idx]) free(vec->content[idx]);
-        vec->content[idx] = (void *) malloc(size);
-        memcpy(vec->content[idx], val, size);
+        memcpy(vp->elems[idx]->data, val, size);
+        vp->elems[idx]->size = size;
         return 0;
     }
     return 1;
@@ -205,148 +182,22 @@ u_int8_t vec_set(vector_t *vec, cuint64 idx, void *val, cuint64 size) {
 
 
 /**
- * swap tow elements in the vector
- *
- * @param pointer to a vector
- * @param index 1
- * @param index 2
- * @ret   void
+ * Remove last element from vector and return it
  */
-void vec_swap(vector_t *vec, cuint64 idx1, cuint64 idx2) {
-    if ((CHECK_IDX(vec, idx1)) && (CHECK_IDX(vec, idx2))) {
-        void *tmpval = vec->content[idx1];
-        vec->content[idx1] = vec->content[idx2];
-        vec->content[idx2] = tmpval;
+Element *vec_pop(Vector *vp) {
+    if (vp->len == 0)
+        return NULL;
+
+    Element *last_element = vec_getElement(vp, vp->len - 1);
+    vp->elems[vp->len - 1] = NULL;
+    vp->len -= 1;
+
+    if (vp->len % vp->cap == 0) {
+        size_t new_size = sizeof(Element*) * (vp->len - vp->cap);
+        vp->elems = (Element**) realloc(vp->elems, new_size);
     }
+
+    return last_element;
 }
 
-
-/**
- * reverse a vector
- *
- * @param pointer to a vector
- * @ret   void
- */
-void vec_reverse(vector_t *vec) {
-    void **buffer = (void **) malloc(BYTES_OF_VOID(vec->length));
-    u_int64_t j = 0;
-
-    for (int64_t i = (vec->length - 1); i >= 0; i--) {
-        buffer[j] = vec_get(vec, i);
-        j++;
-    }
-
-    for (u_int64_t i = 0; i < vec->length; i++) {
-        vec->content[i] = buffer[i];
-    }
-
-    free(buffer);
-}
-
-
-// partition function for vec_sort (quicksort)
-static int64_t partition(vector_t *vec, int64_t lower, int64_t upper) {
-    int64_t i = (lower - 1);
-    const int64_t pivot = VTOI(vec_get(vec, upper));
-
-    for (int64_t j = lower; j < upper; j++) {
-        if (VTOI(vec_get(vec, j)) <= pivot) {
-            i++;
-            vec_swap(vec, i, j);
-        }
-    }
-
-    vec_swap(vec, i + 1, upper);
-
-    return (i < 0) ? 1 : (i + 1);
-}
-
-
-
-/**
- * sort the vector (if vecT is not char*)
- *
- * @param pointer to vector
- * @param lower index (typically first item index (0))
- * @param upper index (typically last item index)
- * @ret   void
- */
-void vec_sort(vector_t *vec, cuint64 lower, cuint64 upper) {
-    // quicksort
-    if (upper > lower) {
-        int64_t partitionIndex = partition(vec, lower, upper);
-
-        vec_sort(vec, lower, partitionIndex - 1);
-        vec_sort(vec, partitionIndex + 1, upper);
-    }
-}
-
-
-
-/**
- * copy src vector to dest
- * WARN: this function wipes dest vector!
- *
- * @param pointer to vector dest
- * @param pointer to vector src
- * @ret   void
-*/
-void vec_cpy(vector_t *dest, vector_t *src) {
-    if (src->length > 0 && src->type == dest->type) {
-        if (dest->content)
-            vec_clean(dest, src->type);
-        dest->content = (void **) malloc(BYTES_OF_VOID(src->length));
-
-        dest->length = src->length;
-        for (u_int64_t i = 0; i < src->length; i++) {
-            if (src->type == STR_T) {
-                vec_set(dest, i, vec_get(src, i), strlen(VTOS(vec_get(src, i))));
-                continue;
-            }
-            vec_set(dest, i, vec_get(src, i), sizeof(vec_get(src, i)));
-        }
-    }
-}
-
-
-/**
- * insert to a specific index in vector
- *
- * @param pointer to vector
- * @param an index
- * @param void pointer to a value
- * @ret   void
-*/
-void vec_insert(vector_t *vec, cuint64 idx, void *val, cuint64 size) {
-    if (idx == vec->length)
-        vec_append(vec, val, size);
-    else if (idx > vec->length) {
-        fprintf(stderr, "ERROR: insertion index out of range\n");
-        exit(EXIT_FAILURE);
-    }
-    else {
-        u_int64_t i;
-        size_t new_vec_size = vec->length + 1;
-        void **buff  = (void **) malloc(BYTES_OF_VOID(new_vec_size));
-        vec->content = (void **) realloc(vec->content, BYTES_OF_VOID(new_vec_size));
-
-        for (i = 0; i < idx; i++)
-            buff[i] = vec_get(vec, i);
-
-        buff[idx] = (void *) malloc(size);
-        memcpy(buff[idx], val, size);
-
-        for (i = idx; i < vec->length; i++)
-            buff[i + 1] = vec_get(vec, i);
-
-        for(i = 0; i < (u_int64_t) new_vec_size; i++)
-            vec->content[i] = buff[i];
-
-        vec_set(vec, idx, val, size);
-
-        vec->length = new_vec_size;
-        free(buff);
-    }
-}
-
-#endif
+#endif // VECTOR_H

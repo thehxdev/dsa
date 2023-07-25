@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
-#include "newvector.h"
+#include "vector.h"
 
 
 int main(void) {
@@ -10,8 +10,11 @@ int main(void) {
 
     char *str1 = "Hello From C!";
     char *str2 = "Another Statement.";
-    vec_append(vec, str1, strlen(str1));
-    vec_append(vec, str2, strlen(str2));
+    
+    // include null terminator character in `size` (last) argument
+    // for vec_append
+    vec_append(vec, str1, strlen(str1) + 1);
+    vec_append(vec, str2, strlen(str2) + 1);
 
     int x = 5, y = 10, z = 20;
     vec_append(nums, &x, sizeof(x));

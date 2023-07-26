@@ -96,8 +96,10 @@ Node *ll_findNodeByIdx(LL_t *llp, size_t idx) {
 Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size) {
     Node *tmp = llp->head;
     while (tmp != NULL) {
-        if (tmp->size != size)
+        if (tmp->size != size) {
+            tmp = tmp->next;
             continue;
+        }
 
         if (memcmp(tmp->data, val, size) == 0)
             return tmp;
@@ -109,8 +111,46 @@ Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size) {
 }
 
 
-// TODO
-int ll_insert(LL_t *llp, size_t idx, void *val, size_t size);
+int ll_insert(LL_t *llp, size_t idx, void *val, size_t size) {
+    int stat = 0;
+    Node *currentNode = llp->head;
+    // New Node
+    Node *nn = NULL;
+
+    if (llp->head == NULL && idx == 0) {
+        stat = ll_append(llp, val, size);
+        goto ret;
+    }
+    else if (llp->head != NULL && idx == 0) {
+        stat = ll_prepend(llp, val, size);
+        goto ret;
+    }
+
+    for (uint32_t i = 1; i <= idx; i++) {
+        currentNode = currentNode->next;
+        /*
+         * if insertion index is out of range
+         * skip inserting and prevent segfault
+         */
+        if (currentNode == NULL) {
+            stat = 1;
+            goto ret;
+        }
+    }
+
+    nn = (Node*) malloc(sizeof(Node));
+    nn->data = (void*) malloc(size);
+
+    memcpy(nn->data, val, size);
+    nn->size = size;
+    nn->next = currentNode->next;
+
+    currentNode->next = nn;
+    if (nn->next == NULL)
+        llp->tail = nn;
+ret:
+    return stat;
+}
 
 
 // TODO

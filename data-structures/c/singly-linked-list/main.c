@@ -11,25 +11,57 @@ int main(void) {
     ll_prepend(ll, &x, sizeof(x));
 
     for (int i = 1; i <= 10; i++)
-        // append numbers form 1 to 10
+        /*
+         * append numbers form 1 to 10
+         * `ll_append` adds a new value
+         * at end of the LL (as tail)
+         */ 
         ll_append(ll, &i, sizeof(i));
 
     /*
      * insert some values manualy to 
      * a specific index
      */
-    ll_insert(ll, 0, &y, sizeof(x));
-    ll_insert(ll, 2, &z, sizeof(z));
-    ll_insert(ll, 7, &t, sizeof(x));
+    ll_insertAtIdx(ll, 0, &y, sizeof(x));
+    ll_insertAtIdx(ll, 2, &z, sizeof(z));
+    ll_insertAtIdx(ll, 7, &t, sizeof(x));
 
     /*
      * if insertion index is out of range
-     * ll_insert functoin will skip inserting
+     * ll_insertAtIdx function will skip inserting
      * to prevent segfault and NULL pointer derefrence
      * and returns 1 as error code
      */
-    int err = ll_insert(ll, 14, &x, sizeof(x));
+    int err = ll_insertAtIdx(ll, 14, &x, sizeof(x));
     printf("Error Code: %d - Instertoin index out of range - skip inserting\n\n", err);
+
+
+    /*
+     * delete a value from LL by it's index in LL
+     */
+    ll_deleteByIdx(ll, 0);
+    ll_deleteByIdx(ll, 1);
+    ll_deleteByIdx(ll, 11);
+    ll_deleteByIdx(ll, 6);
+
+    /*
+     * for deleting from LL, if index is out of range,
+     * ll_delete function will skip to prevent segfault
+     * and NULL pointer derefrence.
+     */
+    err = ll_deleteByIdx(ll, 13);
+    printf("Error Code: %d - Deletetion index out of range - skip deleting\n\n", err);
+
+    /*
+     * delete a value from LL by it's value
+     * 
+     * ll_deleteByVal uses `memcmp` function so
+     * you can pass it whatever value you want
+     *
+     * skip deleting if value pointer is NULL
+     * or value not found in LL
+     */
+    ll_deleteByVal(ll, &z, sizeof(z));
 
     Node *tmp = ll->head;
     while (tmp != NULL) {
@@ -40,3 +72,4 @@ int main(void) {
     ll_free(ll);
     return 0;
 }
+

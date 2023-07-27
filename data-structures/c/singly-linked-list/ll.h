@@ -21,6 +21,18 @@ struct __ll {
 typedef struct __ll LL_t;
 
 
+/**
+ * Free a node's space from memory
+ */
+void node_free(Node *np) {
+    if (np) {
+        if (np->data)
+            free(np->data);
+        free(np);
+    }
+}
+
+
 LL_t *ll_new() {
     /* new linked list */
     LL_t *nll = (LL_t*) malloc(sizeof(LL_t));
@@ -32,6 +44,9 @@ LL_t *ll_new() {
 }
 
 
+/**
+ * Add a new node to end of the LL as TAIL
+ */
 int ll_append(LL_t *llp, void *val, size_t size) {
     /* new node */
     Node *nn = (Node*) malloc(sizeof(Node));
@@ -58,6 +73,9 @@ int ll_append(LL_t *llp, void *val, size_t size) {
 }
 
 
+/**
+ * Add a new node to beginning of the LL as HEAD
+ */
 int ll_prepend(LL_t *llp, void *val, size_t size) {
     /* new node */
     Node *nn = (Node*) malloc(sizeof(Node));
@@ -80,19 +98,23 @@ int ll_prepend(LL_t *llp, void *val, size_t size) {
 }
 
 
+/**
+ * Find a node in LL by it's index
+ */
 Node *ll_findNodeByIdx(LL_t *llp, size_t idx) {
     Node *tmp = llp->head;
-    for (uint32_t i = 0; i <= idx; i++) {
+    for (uint32_t i = 0; i < idx; i++) {
+        tmp = tmp->next;
         if (tmp == NULL)
             return NULL;
-
-        tmp = tmp->next;
     }
-
     return tmp;
 }
 
 
+/**
+ * Find a node in LL by it's value
+ */
 Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size) {
     Node *tmp = llp->head;
     while (tmp != NULL) {
@@ -111,9 +133,12 @@ Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size) {
 }
 
 
-int ll_insert(LL_t *llp, size_t idx, void *val, size_t size) {
+/**
+ * Insert a new node to LL with a specific index
+ */
+int ll_insertAtIdx(LL_t *llp, size_t idx, void *val, size_t size) {
     int stat = 0;
-    Node *currentNode = llp->head;
+    Node *current = llp->head;
     // New Node
     Node *nn = NULL;
 
@@ -127,25 +152,34 @@ int ll_insert(LL_t *llp, size_t idx, void *val, size_t size) {
     }
 
     for (uint32_t i = 1; i <= idx; i++) {
-        currentNode = currentNode->next;
+        current = current->next;
         /*
          * if insertion index is out of range
          * skip inserting and prevent segfault
          */
-        if (currentNode == NULL) {
+        if (current == NULL) {
             stat = 1;
             goto ret;
         }
     }
 
     nn = (Node*) malloc(sizeof(Node));
+    if (nn == NULL) {
+        stat = 1;
+        goto ret;
+    }
+
     nn->data = (void*) malloc(size);
+    if (nn->data == NULL) {
+        stat = 1;
+        goto ret;
+    }
 
     memcpy(nn->data, val, size);
     nn->size = size;
-    nn->next = currentNode->next;
+    nn->next = current->next;
 
-    currentNode->next = nn;
+    current->next = nn;
     if (nn->next == NULL)
         llp->tail = nn;
 ret:
@@ -153,10 +187,133 @@ ret:
 }
 
 
-// TODO
-int ll_delete(LL_t *llp, size_t idx);
+/**
+ * Insert a new node after a specific Node in the LL
+ */
+int ll_insertAfterNode(LL_t *llp, Node *np, void *val, size_t size) {
+    int stat = 0;
+    if (np == NULL || llp == NULL) {
+        stat = 1;
+        goto ret;
+    }
+
+    if (llp->head == NULL) {
+        stat = 1;
+        goto ret;
+    }
+
+    Node *nn = (Node*) malloc(sizeof(Node));
+    if (nn == NULL) {
+        stat = 1;
+        goto ret;
+    }
+
+    nn->data = (void*) malloc(size);
+    if (nn->data == NULL) {
+        free(nn);
+        stat = 1;
+        goto ret;
+    }
+
+    memcpy(nn->data, val, size);
+    nn->size = size;
+    nn->next = np->next;
+    np->next = nn;
+
+    if (nn->next == NULL)
+        llp->tail = nn;
+
+ret:
+    return stat;
+}
 
 
+/**
+ * delete a value from LL by it's value
+ */
+int ll_deleteByVal(LL_t *llp, void *val, size_t size) {
+    int stat = 0;
+    if (llp == NULL || val == NULL || size <= 0) {
+        stat = 1;
+        goto ret;
+    }
+
+    Node *current = llp->head;
+    if (current == NULL) {
+        stat = 1;
+        goto ret;
+    }
+    Node *prev = NULL;
+
+    while (1) {
+        prev = current;
+        current = current->next;
+
+        if (current == NULL) {
+            stat = 1;
+            goto ret;
+        }
+
+        if (memcmp(current->data, val, size) == 0) {
+            break;
+        }
+    }
+
+    if (current == llp->head) {
+        node_free(current);
+        llp->head = NULL;
+        llp->tail = NULL;
+        goto ret;
+    }
+
+    prev->next = current->next;
+    if (current->next == NULL)
+        llp->tail = prev;
+    node_free(current);
+
+ret:
+    return stat;
+}
+
+
+/**
+ * Delete a node from LL by it's index
+ */
+int ll_deleteByIdx(LL_t *llp, size_t idx) {
+    int stat = 0;
+    Node *current = llp->head;
+    Node *prev = NULL;
+
+    if (idx == 0) {
+        llp->head = llp->head->next;
+        if (llp->head == NULL)
+            llp->tail = NULL;
+        node_free(current);
+        goto ret;
+    }
+
+    for (uint32_t i = 0; i < idx; i++) {
+        prev = current;
+        current = current->next;
+
+        if (current == NULL) {
+            stat = 1;
+            goto ret;
+        }
+    }
+
+    prev->next = current->next;
+    node_free(current);
+
+ret:
+    return stat;
+}
+
+
+/**
+ * Free a singly-linked-list from memory and 
+ * it's nodes.
+ */
 void ll_free(LL_t *llp) {
     if (llp->head != NULL) {
         Node *current = llp->head;
@@ -166,8 +323,7 @@ void ll_free(LL_t *llp) {
                 free(prev);
 
             if (current->next == NULL) {
-                free(current->data);
-                free(current);
+                node_free(current);
                 break;
             }
 
@@ -179,5 +335,5 @@ void ll_free(LL_t *llp) {
     free(llp);
 }
 
+#endif // LL_H
 
-#endif

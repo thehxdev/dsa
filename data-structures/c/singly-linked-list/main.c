@@ -33,7 +33,7 @@ int main(void) {
      * and returns 1 as error code
      */
     int err = ll_insertAtIdx(ll, 14, &x, sizeof(x));
-    printf("Error Code: %d - Instertoin index out of range - skip inserting\n\n", err);
+    printf("Error Code: %d - Instertoin index out of range - skip inserting\n", err);
 
 
     /*

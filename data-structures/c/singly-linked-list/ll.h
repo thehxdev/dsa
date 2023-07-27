@@ -21,6 +21,28 @@ struct __ll {
 typedef struct __ll LL_t;
 
 
+Node *node_new(void *val, size_t size) {
+    if (val == NULL || size == 0)
+        return NULL;
+
+    Node *nn = (Node*) malloc(sizeof(Node));
+    if (nn == NULL)
+        return nn;
+
+    nn->data = (void*) malloc(size);
+    if (nn->data == NULL) {
+        free(nn);
+        return NULL;
+    }
+
+    memcpy(nn->data, val, size);
+    nn->size = size;
+    nn->next = NULL;
+
+    return nn;
+}
+
+
 /**
  * Free a node's space from memory
  */
@@ -33,6 +55,9 @@ void node_free(Node *np) {
 }
 
 
+/**
+ * Create a new LL
+ */
 LL_t *ll_new() {
     /* new linked list */
     LL_t *nll = (LL_t*) malloc(sizeof(LL_t));
@@ -48,17 +73,14 @@ LL_t *ll_new() {
  * Add a new node to end of the LL as TAIL
  */
 int ll_append(LL_t *llp, void *val, size_t size) {
-    /* new node */
-    Node *nn = (Node*) malloc(sizeof(Node));
+    if (llp == NULL || val == NULL) {
+        return 1;
+    }
+
+    // new node
+    Node *nn = node_new(val, size);
     if (nn == NULL)
         return 1;
-
-    nn->data = (void*) malloc(size);
-    if (nn->data == NULL)
-        return 1;
-
-    memcpy(nn->data, val, size);
-    nn->size = size;
     nn->next = NULL;
 
     if (llp->head == NULL) {
@@ -77,17 +99,15 @@ int ll_append(LL_t *llp, void *val, size_t size) {
  * Add a new node to beginning of the LL as HEAD
  */
 int ll_prepend(LL_t *llp, void *val, size_t size) {
-    /* new node */
-    Node *nn = (Node*) malloc(sizeof(Node));
+    if (llp == NULL || val == NULL) {
+        return 1;
+    }
+
+    // new node
+    Node *nn = node_new(val, size);
     if (nn == NULL)
         return 1;
 
-    nn->data = (void*) malloc(size);
-    if (nn->data == NULL)
-        return 1;
-
-    memcpy(nn->data, val, size);
-    nn->size = size;
     nn->next = llp->head;
 
     llp->head = nn;
@@ -102,11 +122,14 @@ int ll_prepend(LL_t *llp, void *val, size_t size) {
  * Find a node in LL by it's index
  */
 Node *ll_findNodeByIdx(LL_t *llp, size_t idx) {
+    if (llp == NULL)
+        return NULL;
+
     Node *tmp = llp->head;
     for (uint32_t i = 0; i < idx; i++) {
         tmp = tmp->next;
         if (tmp == NULL)
-            return NULL;
+            break;
     }
     return tmp;
 }
@@ -116,6 +139,9 @@ Node *ll_findNodeByIdx(LL_t *llp, size_t idx) {
  * Find a node in LL by it's value
  */
 Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size) {
+    if (llp == NULL)
+        return NULL;
+
     Node *tmp = llp->head;
     while (tmp != NULL) {
         if (tmp->size != size) {
@@ -138,6 +164,12 @@ Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size) {
  */
 int ll_insertAtIdx(LL_t *llp, size_t idx, void *val, size_t size) {
     int stat = 0;
+
+    if (llp == NULL) {
+        stat = 1;
+        goto ret;
+    }
+
     Node *current = llp->head;
     // New Node
     Node *nn = NULL;
@@ -163,20 +195,11 @@ int ll_insertAtIdx(LL_t *llp, size_t idx, void *val, size_t size) {
         }
     }
 
-    nn = (Node*) malloc(sizeof(Node));
+    nn = node_new(val, size);
     if (nn == NULL) {
         stat = 1;
         goto ret;
     }
-
-    nn->data = (void*) malloc(size);
-    if (nn->data == NULL) {
-        stat = 1;
-        goto ret;
-    }
-
-    memcpy(nn->data, val, size);
-    nn->size = size;
     nn->next = current->next;
 
     current->next = nn;
@@ -202,21 +225,12 @@ int ll_insertAfterNode(LL_t *llp, Node *np, void *val, size_t size) {
         goto ret;
     }
 
-    Node *nn = (Node*) malloc(sizeof(Node));
+    Node *nn = node_new(val, size);
     if (nn == NULL) {
         stat = 1;
         goto ret;
     }
 
-    nn->data = (void*) malloc(size);
-    if (nn->data == NULL) {
-        free(nn);
-        stat = 1;
-        goto ret;
-    }
-
-    memcpy(nn->data, val, size);
-    nn->size = size;
     nn->next = np->next;
     np->next = nn;
 
@@ -233,6 +247,12 @@ ret:
  */
 int ll_deleteByVal(LL_t *llp, void *val, size_t size) {
     int stat = 0;
+
+    if (llp == NULL) {
+        stat = 1;
+        goto ret;
+    }
+
     if (llp == NULL || val == NULL || size <= 0) {
         stat = 1;
         goto ret;
@@ -281,6 +301,12 @@ ret:
  */
 int ll_deleteByIdx(LL_t *llp, size_t idx) {
     int stat = 0;
+
+    if (llp == NULL) {
+        stat = 1;
+        goto ret;
+    }
+
     Node *current = llp->head;
     Node *prev = NULL;
 

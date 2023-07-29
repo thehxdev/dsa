@@ -21,6 +21,9 @@ struct __ll {
 typedef struct __ll LL_t;
 
 
+/**
+ * Create a new node
+ */
 Node *node_new(void *val, size_t size) {
     if (val == NULL || size == 0)
         return NULL;
@@ -126,7 +129,10 @@ Node *ll_findNodeByIdx(LL_t *llp, size_t idx) {
         return NULL;
 
     Node *tmp = llp->head;
-    for (uint32_t i = 0; i < idx; i++) {
+    if (idx == 0)
+        return tmp;
+
+    for (uint32_t i = 1; i <= idx; i++) {
         tmp = tmp->next;
         if (tmp == NULL)
             break;
@@ -165,14 +171,12 @@ Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size) {
 int ll_insertAtIdx(LL_t *llp, size_t idx, void *val, size_t size) {
     int stat = 0;
 
-    if (llp == NULL) {
+    if (llp == NULL || val == NULL || size == 0) {
         stat = 1;
         goto ret;
     }
 
     Node *current = llp->head;
-    // New Node
-    Node *nn = NULL;
 
     if (llp->head == NULL && idx == 0) {
         stat = ll_append(llp, val, size);
@@ -195,7 +199,7 @@ int ll_insertAtIdx(LL_t *llp, size_t idx, void *val, size_t size) {
         }
     }
 
-    nn = node_new(val, size);
+    Node *nn = node_new(val, size);
     if (nn == NULL) {
         stat = 1;
         goto ret;
@@ -318,7 +322,7 @@ int ll_deleteByIdx(LL_t *llp, size_t idx) {
         goto ret;
     }
 
-    for (uint32_t i = 0; i < idx; i++) {
+    for (uint32_t i = 1; i <= idx; i++) {
         prev = current;
         current = current->next;
 

@@ -346,23 +346,21 @@ ret:
  */
 void ll_free(LL_t *llp) {
     if (llp->head != NULL) {
-        Node *current = llp->head;
-        Node *prev = NULL;
+        Node *tmp = llp->head;
+        if (tmp == NULL)
+            goto only_list;
+        Node *next = tmp->next;
+
         while (1) {
-            if (prev != NULL)
-                free(prev);
-
-            if (current->next == NULL) {
-                node_free(current);
+            node_free(tmp);
+            tmp = next;
+            if (tmp == NULL)
                 break;
-            }
-
-            free(current->data);
-            prev = current;
-            current = current->next;
+            next = tmp->next;
         }
+only_list:
+        free(llp);
     }
-    free(llp);
 }
 
 #endif // LL_H

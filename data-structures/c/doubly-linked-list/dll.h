@@ -382,25 +382,20 @@ ret:
  */
 void dll_free(DLL_t *dllp) {
     if (dllp != NULL) {
-        Node *tmp = dllp->head;
+        Node *tmp  = dllp->head;
         if (tmp == NULL)
             goto only_list;
+        Node *next = tmp->next;
 
         while (1) {
-            if (tmp->prev != NULL)
-                free(tmp->prev);
-
-            if (tmp->next == NULL) {
-                node_free(tmp);
+            node_free(tmp);
+            tmp = next;
+            if (tmp == NULL)
                 break;
-            }
-
-            free(tmp->data);
-            tmp = tmp->next;
+            next = tmp->next;
         }
 only_list:
         free(dllp);
-        dllp = NULL;
     }
 }
 

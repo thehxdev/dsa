@@ -1,8 +1,10 @@
 CC=gcc
 FLAGS=-Wall -Wextra -pedantic -std=c17
 FLAGS+=-Werror
-OUT=a.out
 INPUT=main.c
 
 default:
-	$(CC) $(FLAGS) -o $(OUT) $(INPUT)
+	$(CC) $(FLAGS) $(INPUT)
+
+check:
+	valgrind --leak-check=full ./a.out

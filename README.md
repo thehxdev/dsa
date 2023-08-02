@@ -8,4 +8,5 @@ My implementation of algorithms and data structures.
         - [Singly Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/c/singly-linked-list)
         - [Doubly Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/c/doubly-linked-list)
         - [Stack using Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/c/stack-ll)
+        - [Stack using Array](https://github.com/thehxdev/algo-ds/tree/main/data-structures/c/stack-a)
 

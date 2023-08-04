@@ -16,6 +16,8 @@
 #define VTOC(charptr) (*(char*)(charptr)) // void pointer to char
 #define VTOS(strptr) ((char*)(strptr))    // void pointer to char* (string)
 
+#define CHECH_AND_FREE(ptr) if ((ptr) != NULL) free((ptr))
+
 
 struct __element {
     void *data;
@@ -38,7 +40,10 @@ typedef struct __vector Vector;
 
 
 static bool check_idx(Vector *vp, size_t idx) {
-    return (idx < vp->len) ? true : false;
+    if (vp == NULL)
+        return false;
+
+    return (idx < vp->len);
 }
 
 
@@ -48,10 +53,16 @@ static bool check_idx(Vector *vp, size_t idx) {
 Vector *vec_new() {
     // new vector
     Vector *nv = (Vector*) malloc(sizeof(Vector));
+    if (nv == NULL)
+        return NULL;
 
     nv->len   = 0;
     nv->cap   = DEFAULT_CAP;
     nv->elems = (Element**) calloc(sizeof(Element*), nv->cap);
+    if (nv->elems == NULL) {
+        CHECH_AND_FREE(nv);
+        return NULL;
+    }
 
     return nv;
 }
@@ -61,11 +72,10 @@ Vector *vec_new() {
  * Get data stored in an Element from vector
  */
 void *vec_getData(Vector *vp, size_t idx) {
-    if (check_idx(vp, idx)) {
-        return vp->elems[idx]->data;
-    }
+    if (!check_idx(vp, idx))
+        return NULL;
 
-    return NULL;
+    return vp->elems[idx]->data;
 }
 
 
@@ -73,45 +83,54 @@ void *vec_getData(Vector *vp, size_t idx) {
  * Get an Element stored in vector
  */
 Element *vec_getElement(Vector *vp, size_t idx) {
-    if (check_idx(vp, idx)) {
-        return vp->elems[idx];
+    if (!check_idx(vp, idx)) {
+        return NULL;
     }
 
-    return NULL;
+    return vp->elems[idx];
 }
 
 
 /**
  * Free and delete a vector from memory
  */
-void vec_free(Vector *vp) {
-    if (vp->elems && vp) {
+int vec_free(Vector *vp) {
+    if (vp == NULL)
+        return 1;
+
+    if (vp->elems) {
         for (uint32_t i = 0; i < vp->len; i++) {
-            free(vp->elems[i]->data);
-            free(vp->elems[i]);
+            CHECH_AND_FREE(vp->elems[i]->data);
+            CHECH_AND_FREE(vp->elems[i]);
         }
         free(vp->elems);
-
         free(vp);
     }
+    return 0;
 }
 
 
 /*
  * Clear a vector and re-initialize it
  */
-void vec_clean(Vector *vp) {
-    if (vp->elems && vp) {
+int vec_clean(Vector *vp) {
+    if (vp == NULL)
+        return 1;
+
+    if (vp->elems) {
         for (uint32_t i = 0; i < vp->len; i++) {
-            free(vp->elems[i]->data);
-            free(vp->elems[i]);
+            CHECH_AND_FREE(vp->elems[i]->data);
+            CHECH_AND_FREE(vp->elems[i]);
         }
         free(vp->elems);
 
         vp->len   = 0;
         vp->cap   = DEFAULT_CAP;
         vp->elems = (Element**) calloc(sizeof(Element*), vp->cap);
+        if (vp->elems == NULL)
+            return 1;
     }
+    return 0;
 }
 
 
@@ -119,6 +138,9 @@ void vec_clean(Vector *vp) {
  * Append a new value to vector
  */
 int vec_append(Vector *vp, void *val, size_t size) {
+    if (vp == NULL || val == NULL || size == 0)
+        return 1;
+
     if (vp->len % vp->cap == 0) {
         size_t new_size = sizeof(Element*) * (vp->len + vp->cap);
         vp->elems = (Element**) realloc(vp->elems, new_size);
@@ -145,39 +167,31 @@ int vec_append(Vector *vp, void *val, size_t size) {
 /**
  * Swap tow elements in vector
  */
-void vec_swap(Vector *vp, size_t idx1, size_t idx2) {
-    if (check_idx(vp, idx1), check_idx(vp, idx2)) {
-        Element *tmp = vec_getElement(vp, idx1);
-        vp->elems[idx1] = vec_getElement(vp, idx2);
-        vp->elems[idx2] = tmp;
-    }
+int vec_swap(Vector *vp, size_t idx1, size_t idx2) {
+    if (!check_idx(vp, idx1) || !check_idx(vp, idx2))
+        return 1;
+
+    Element *tmp = vec_getElement(vp, idx1);
+    vp->elems[idx1] = vec_getElement(vp, idx2);
+    vp->elems[idx2] = tmp;
+    return 0;
 }
 
 
 /**
  * Set a new value to an element in vector
  */
-int vec_set(Vector *vp, size_t idx, void *val, size_t size) {
-    if (check_idx(vp, idx)) {
-        if (vp->elems[idx])
-            free(vec_getElement(vp, idx));
+int vec_change(Vector *vp, size_t idx, void *val, size_t size) {
+    if (!check_idx(vp, idx) || val == NULL || size == 0)
+        return 1;
 
-        if (vp->elems[idx]->data)
-            free(vec_getData(vp, idx));
+    vp->elems[idx]->data = (void*) realloc(vp->elems[idx]->data, size);
+    if (vp->elems[idx]->data == NULL)
+        return 1;
 
-        vp->elems[idx] = (Element*) malloc(sizeof(Element));
-        if (vp->elems[idx] == NULL)
-            return 1;
-
-        vp->elems[idx]->data = (void*) malloc(size);
-        if (vp->elems[idx]->data == NULL)
-            return 1;
-
-        memcpy(vp->elems[idx]->data, val, size);
-        vp->elems[idx]->size = size;
-        return 0;
-    }
-    return 1;
+    memmove(vp->elems[idx]->data, val, size);
+    vp->elems[idx]->size = size;
+    return 0;
 }
 
 
@@ -185,6 +199,8 @@ int vec_set(Vector *vp, size_t idx, void *val, size_t size) {
  * Remove last element from vector and return it
  */
 Element *vec_pop(Vector *vp) {
+    if (vp == NULL)
+        return NULL;
     if (vp->len == 0)
         return NULL;
 

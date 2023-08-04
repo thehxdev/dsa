@@ -10,11 +10,15 @@ int main(void) {
 
     char *str1 = "Hello From C!";
     char *str2 = "Another Statement.";
+    char *str3 = "OOP Sucks!";
     
     // include null terminator character in `size` (last) argument
     // for vec_append
     vec_append(vec, str1, strlen(str1) + 1);
     vec_append(vec, str2, strlen(str2) + 1);
+
+    // change str1 to str3 in vector
+    vec_change(vec, 0, str3, strlen(str3) + 1);
 
     int x = 5, y = 10, z = 20;
     vec_append(nums, &x, sizeof(x));

@@ -6,20 +6,18 @@
 #include <memory.h>
 
 
-struct __node {
+typedef struct __node {
     void *data;
     size_t size;
     struct __node *next;
     struct __node *prev;
-};
-typedef struct __node Node;
+} Node;
 
 
-struct __dll {
+typedef struct __dll {
     Node *head;
     Node *tail;
-};
-typedef struct __dll DLL_t;
+} DLL_t;
 
 
 /**
@@ -156,16 +154,11 @@ ret:
  * Find a node in DLL by it's value
  */
 Node *dll_findNodeByVal(DLL_t *dllp, void *val, size_t size) {
-    if (dllp == NULL)
+    if (dllp == NULL || val == NULL || size == 0)
         return NULL;
 
     Node *tmp = dllp->head;
     while (tmp != NULL) {
-        if (tmp->size != size) {
-            tmp = tmp->next;
-            continue;
-        }
-
         if (memcmp(tmp->data, val, size) == 0)
             return tmp;
 
@@ -173,6 +166,21 @@ Node *dll_findNodeByVal(DLL_t *dllp, void *val, size_t size) {
     }
 
     return NULL;
+}
+
+
+/**
+ * Find a node in DLL by it's value
+ * (recursive implementation)
+ */
+Node *dll_findNodeByVal_Rec(Node *np, void *val, size_t size) {
+    if (np == NULL || val == NULL || size == 0)
+        return NULL;
+
+    if (memcmp(np->data, val, size) != 0)
+        dll_findNodeByVal_Rec(np->next, val, size);
+
+    return np;
 }
 
 
@@ -401,4 +409,3 @@ only_list:
 
 
 #endif // DLL_H
-

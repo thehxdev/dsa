@@ -6,19 +6,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-struct __node {
+typedef struct __node {
     void *data;
     size_t size;
     struct __node *next;
-};
-typedef struct __node Node;
+} Node;
 
 
-struct __ll {
+typedef struct __ll {
     Node *head;
     Node *tail;
-};
-typedef struct __ll LL_t;
+} LL_t;
 
 
 /**
@@ -143,6 +141,24 @@ Node *ll_findNodeByIdx(LL_t *llp, size_t idx) {
 
 /**
  * Find a node in LL by it's value
+ * (Recursive implementation)
+ */
+Node *ll_findNodeByVal_Rec(Node *np, void *val, size_t size) {
+    if (np == NULL || val == NULL || size == 0)
+        return NULL;
+
+    if (np->size != size)
+        ll_findNodeByVal_Rec(np->next, val, size);
+
+    if (memcmp(np->data, val, size) == 0)
+        return np;
+
+    return ll_findNodeByVal_Rec(np->next, val, size);
+}
+
+
+/**
+ * Find a node in LL by it's value
  */
 Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size) {
     if (llp == NULL)
@@ -251,11 +267,6 @@ ret:
  */
 int ll_deleteByVal(LL_t *llp, void *val, size_t size) {
     int stat = 0;
-
-    if (llp == NULL) {
-        stat = 1;
-        goto ret;
-    }
 
     if (llp == NULL || val == NULL || size <= 0) {
         stat = 1;

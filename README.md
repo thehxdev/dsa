@@ -10,4 +10,5 @@ My implementation of algorithms and data structures.
         - [Stack using Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/c/stack-ll)
         - [Stack using Array](https://github.com/thehxdev/algo-ds/tree/main/data-structures/c/stack-a)
         - [Queue using Doubly Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/c/queue)
+        - [Hash Table](https://github.com/thehxdev/algo-ds/tree/main/data-structures/c/hash-table)
 

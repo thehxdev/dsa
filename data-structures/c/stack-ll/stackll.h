@@ -76,16 +76,13 @@ Stack *stk_new() {
  * insert a new node to stack
  */
 int stk_push(Stack *sp, void *val , size_t size) {
-    int stat = 0;
     if (sp == NULL || val == NULL || size == 0) {
-        stat = 1;
-        goto ret;
+        return 1;
     }
 
     Node *nn = node_new(val, size);
     if (nn == NULL) {
-        stat = 1;
-        goto ret;
+        return 1;
     }
 
     if (sp->top == NULL) {
@@ -97,8 +94,7 @@ int stk_push(Stack *sp, void *val , size_t size) {
     nn->next = NULL;
     sp->top = nn;
 
-ret:
-    return stat;
+    return 0;
 }
 
 
@@ -148,8 +144,10 @@ int stk_popD(Stack *sp) {
 void stk_free(Stack *sp) {
     if (sp != NULL) {
         Node *tmp  = sp->top;
-        if (tmp == NULL)
-            goto only_stack;
+        if (tmp == NULL) {
+            free(sp);
+            return;
+        }
         Node *prev = tmp->prev;
 
         while (1) {
@@ -159,7 +157,6 @@ void stk_free(Stack *sp) {
                 break;
             prev = tmp->prev;
         }
-only_stack:
         free(sp);
     }
 }

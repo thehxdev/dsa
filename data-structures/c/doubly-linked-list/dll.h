@@ -391,8 +391,10 @@ ret:
 void dll_free(DLL_t *dllp) {
     if (dllp != NULL) {
         Node *tmp  = dllp->head;
-        if (tmp == NULL)
-            goto only_list;
+        if (tmp == NULL) {
+            free(dllp);
+            return;
+        }
         Node *next = tmp->next;
 
         while (1) {
@@ -402,7 +404,6 @@ void dll_free(DLL_t *dllp) {
                 break;
             next = tmp->next;
         }
-only_list:
         free(dllp);
     }
 }

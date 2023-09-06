@@ -7,20 +7,20 @@ SRC_DIR :=./src
 
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 OBJ_FILES := $(SRC_FILES:.c=.o)
-OUT :=a.out
+BIN := a.out
 
 
-$(OUT): $(OBJ_FILES)
-	$(CC) -o $(OUT) $(wildcard $(SRC_DIR)/*.o)
+$(BIN): $(OBJ_FILES)
+	$(CC) -o $(BIN) $(wildcard $(SRC_DIR)/*.o)
 
 %.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $(SRC_DIR)/$*.c
 
 clean:
-	rm -rf $(OUT) $(SRC_DIR)/*.o
+	rm -rf $(BIN) $(SRC_DIR)/*.o
 
 check:
-	valgrind ./$(OUT)
+	valgrind ./$(BIN)
 
 checkfull:
-	valgrind --leak-check=full ./$(OUT)
+	valgrind --leak-check=full ./$(BIN)

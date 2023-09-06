@@ -1,27 +1,9 @@
-#ifndef LL_H
-#define LL_H
-
-
 #include <memory.h>
 #include <stdlib.h>
 #include <stdint.h>
-
-typedef struct __node {
-    void *data;
-    size_t size;
-    struct __node *next;
-} Node;
+#include "ll.h"
 
 
-typedef struct __ll {
-    Node *head;
-    Node *tail;
-} LL_t;
-
-
-/**
- * Create a new node
- */
 Node *node_new(void *val, size_t size) {
     if (val == NULL || size == 0)
         return NULL;
@@ -373,6 +355,3 @@ only_list:
         free(llp);
     }
 }
-
-#endif // LL_H
-

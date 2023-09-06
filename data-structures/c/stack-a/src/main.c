@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "stacka.h"
 
 #define ARR_LEN 6

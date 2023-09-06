@@ -1,26 +1,10 @@
-/*
- * Stack implementation using array
- */
-
-
-#ifndef STACK_A_H
-#define STACK_A_H
-
-#define DEFAULT_CAP 20
-
 #include <stdlib.h>
 #include <memory.h>
 #include <stdint.h>
-
-typedef struct __stack {
-    size_t cap;
-    size_t len;
-    void **elems;
-} Stack;
+#include "stacka.h"
 
 
 Stack *stk_new() {
-    // new stack
     Stack *ns = (Stack*) malloc(sizeof(Stack));
     if (ns == NULL)
         return NULL;
@@ -107,6 +91,3 @@ void stk_free(Stack *sp) {
         free(sp);
     }
 }
-
-
-#endif // STACK_A_H

@@ -1,10 +1,20 @@
-CC=gcc
-FLAGS=-Wall -Wextra -pedantic -std=c17
-FLAGS+=-Werror
-INPUT=main.c
+CC := gcc
+CFLAGS := -std=c17 -Wall -Wextra
+CFLAGS += -Wno-unused-result
+CFLAGS += -ggdb -Og
 
-default:
-	$(CC) $(FLAGS) $(INPUT)
+SRC_DIR := ./src
 
-check:
-	valgrind --leak-check=full ./a.out
+SRC := $(wildcard $(SRC_DIR)/*.c)
+OBJ := $(SRC:.c=.o)
+BIN := a.out
+
+
+$(BIN): $(OBJ)
+	$(CC) -o $(BIN) $(wildcard $(SRC_DIR)/*.o)
+
+%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/$*.c
+
+clean:
+	rm -rf $(BIN) $(SRC_DIR)/*.o

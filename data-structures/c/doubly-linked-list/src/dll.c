@@ -1,28 +1,9 @@
-#ifndef DLL_H
-#define DLL_H
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <memory.h>
+#include "dll.h"
 
 
-typedef struct __node {
-    void *data;
-    size_t size;
-    struct __node *next;
-    struct __node *prev;
-} Node;
-
-
-typedef struct __dll {
-    Node *head;
-    Node *tail;
-} DLL_t;
-
-
-/**
- * Create a new node
- */
 Node *node_new(void *val, size_t size) {
     if (val == NULL || size == 0)
         return NULL;
@@ -37,7 +18,7 @@ Node *node_new(void *val, size_t size) {
         return NULL;
     }
 
-    memcpy(nn->data, val, size);
+    memmove(nn->data, val, size);
     nn->size = size;
     nn->next = NULL;
     nn->prev = NULL;
@@ -46,9 +27,6 @@ Node *node_new(void *val, size_t size) {
 }
 
 
-/**
- * Free a node's space from memory
- */
 void node_free(Node *np) {
     if (np) {
         if (np->data) {
@@ -61,9 +39,6 @@ void node_free(Node *np) {
 }
 
 
-/**
- * Create a new DLL
- */
 DLL_t *dll_new() {
     DLL_t *ndll = (DLL_t*) malloc(sizeof(DLL_t));
     if (ndll == NULL)
@@ -76,9 +51,6 @@ DLL_t *dll_new() {
 }
 
 
-/**
- * Add a new node to end of the DLL as TAIL
- */
 int dll_append(DLL_t *dllp, void *val, size_t size) {
     int stat = 0;
     Node *nn = node_new(val, size);
@@ -102,9 +74,6 @@ ret:
 }
 
 
-/**
- * Add a new node to beginning of the DLL as HEAD
- */
 int dll_prepend(DLL_t *dllp, void *val, size_t size) {
     int stat = 0;
     Node *nn = node_new(val, size);
@@ -128,9 +97,6 @@ ret:
 }
 
 
-/**
- * Find a node in DLL by it's index
- */
 Node *dll_findNodeByIdx(DLL_t *dllp, size_t idx) {
     if (dllp == NULL)
         return NULL;
@@ -150,9 +116,6 @@ ret:
 }
 
 
-/**
- * Find a node in DLL by it's value
- */
 Node *dll_findNodeByVal(DLL_t *dllp, void *val, size_t size) {
     if (dllp == NULL || val == NULL || size == 0)
         return NULL;
@@ -169,10 +132,6 @@ Node *dll_findNodeByVal(DLL_t *dllp, void *val, size_t size) {
 }
 
 
-/**
- * Find a node in DLL by it's value
- * (recursive implementation)
- */
 Node *dll_findNodeByVal_Rec(Node *np, void *val, size_t size) {
     if (np == NULL || val == NULL || size == 0)
         return NULL;
@@ -184,9 +143,6 @@ Node *dll_findNodeByVal_Rec(Node *np, void *val, size_t size) {
 }
 
 
-/**
- * Insert a new node to DLL with a specific index
- */
 int dll_insertAtIdx(DLL_t *dllp, size_t idx, void *val, size_t size) {
     int stat = 0;
     if (dllp == NULL || val == NULL || size == 0) {
@@ -229,9 +185,6 @@ ret:
 }
 
 
-/**
- * Insert a new node after a specific Node in the DLL
- */
 int dll_insertAfterNode(DLL_t *dllp, Node *np, void *val, size_t size) {
     int stat = 0;
     if (dllp == NULL || np == NULL || val == NULL || size == 0) {
@@ -262,9 +215,6 @@ ret:
 }
 
 
-/**
- * delete a value from DLL by it's value
- */
 int dll_deleteByVal(DLL_t *dllp, void *val, size_t size) {
     int stat = 0;
     if (dllp == NULL || val == NULL || size == 0) {
@@ -301,9 +251,6 @@ ret:
 }
 
 
-/**
- * Delete a node from DLL by it's index
- */
 int dll_deleteByIdx(DLL_t *dllp, size_t idx) {
     int stat = 0;
     if (dllp == NULL) {
@@ -343,9 +290,6 @@ ret:
 }
 
 
-/**
- * Delete a node from DLL by it's memory address
- */
 int dll_deleteByAddr(DLL_t *dllp, Node *np) {
     int stat = 0;
     if (dllp == NULL || np == NULL) {
@@ -384,10 +328,6 @@ ret:
 }
 
 
-/**
- * Free a doubly-linked-list from memory and 
- * it's nodes.
- */
 void dll_free(DLL_t *dllp) {
     if (dllp != NULL) {
         Node *tmp  = dllp->head;
@@ -407,6 +347,3 @@ void dll_free(DLL_t *dllp) {
         free(dllp);
     }
 }
-
-
-#endif // DLL_H

@@ -1,29 +1,8 @@
-/*
- * Stack implementation using Doubly-Linked-List
- */
-
-#ifndef STACK_LL_H
-#define STACK_LL_H
-
 #include <stdlib.h>
 #include <memory.h>
-
-typedef struct __node {
-    void *data;
-    struct __node *prev;
-    struct __node *next;
-    size_t size;
-} Node;
+#include "stackll.h"
 
 
-typedef struct __stack {
-    Node *top;
-} Stack;
-
-
-/*
- * Create a new stack node
- */
 Node *node_new(void *val, size_t size) {
     if (val == NULL || size == 0)
         return NULL;
@@ -47,9 +26,6 @@ Node *node_new(void *val, size_t size) {
 }
 
 
-/*
- * Free a node from memory
- */
 void node_free(Node *np) {
     if (np != NULL) {
         if (np->data != NULL)
@@ -59,9 +35,6 @@ void node_free(Node *np) {
 }
 
 
-/*
- * Create a new stack instance
- */
 Stack *stk_new() {
     Stack *ns = (Stack*) malloc(sizeof(Stack));
     if (ns == NULL)
@@ -72,9 +45,6 @@ Stack *stk_new() {
 }
 
 
-/*
- * insert a new node to stack
- */
 int stk_push(Stack *sp, void *val , size_t size) {
     if (sp == NULL || val == NULL || size == 0) {
         return 1;
@@ -98,9 +68,6 @@ int stk_push(Stack *sp, void *val , size_t size) {
 }
 
 
-/*
- * Remove last node from stack and return it's address
- */
 Node *stk_pop(Stack *sp) {
     if (sp == NULL)
         return NULL;
@@ -118,9 +85,6 @@ Node *stk_pop(Stack *sp) {
 }
 
 
-/*
- * Remove last node from stack and also delete it
- */
 int stk_popD(Stack *sp) {
     if (sp == NULL)
         return 1;
@@ -138,9 +102,6 @@ int stk_popD(Stack *sp) {
 }
 
 
-/*
- * Free a stack and all of it's nodes
- */
 void stk_free(Stack *sp) {
     if (sp != NULL) {
         Node *tmp  = sp->top;
@@ -160,5 +121,3 @@ void stk_free(Stack *sp) {
         free(sp);
     }
 }
-
-#endif

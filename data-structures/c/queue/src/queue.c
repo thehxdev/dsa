@@ -1,27 +1,6 @@
-/*
- * Queue implementation using doubly-linked-list
- */
-
-
-#ifndef QUEUE_H
-#define QUEUE_H
-
-
 #include <stdlib.h>
 #include <memory.h>
-
-
-typedef struct __node {
-    void *data;
-    struct __node *next;
-    struct __node *prev;
-} Node;
-
-
-typedef struct __queue {
-    Node *head;
-    Node *tail;
-} Queue;
+#include "queue.h"
 
 
 Node *node_new(void *val, size_t size) {
@@ -127,10 +106,12 @@ int q_dequeueD(Queue *qp) {
 void q_free(Queue *qp) {
     if (qp) {
         Node *tmp = qp->head;
-        if (tmp == NULL)
-            goto only_q;
-        Node *next = tmp->next;
+        if (tmp == NULL) {
+            free(qp);
+            return;
+        }
 
+        Node *next = tmp->next;
         while (1) {
             node_free(tmp);
             tmp = next;
@@ -138,10 +119,6 @@ void q_free(Queue *qp) {
                 break;
             next = tmp->next;
         }
-only_q:
         free(qp);
     }
 }
-
-
-#endif // QUEUE_H

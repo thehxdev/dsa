@@ -8,12 +8,13 @@
 #define HASH_TABLE_H
 
 #include <stddef.h>
+#include "dll.h"
 
 #define HT_CAPACITY (1 << 16)
 
 typedef struct __ht {
     void *vals[HT_CAPACITY];
-    char *keys[HT_CAPACITY];
+    DLL *keys;
     size_t len;
 } HT;
 
@@ -54,6 +55,7 @@ int ht_add(HT *htp, const char *key, void *val, size_t val_size);
  * Free a HT from memorty including it's values
  *
  * @htp: pointer to a HT
+ * @fn: a function pointer to free a value
  *
  * @ret: 0 ok | 1 error
  */
@@ -90,9 +92,10 @@ int ht_change(HT *htp, const char *key, void *val, size_t val_size);
  *
  * @htp: pointer to a HT
  * @key: key of value
+ * @fn: a function pointer to free a value
  *
  * @ret: 0 ok | 1 error
  */
-// int ht_delete(HT *htp, const char *key, void (*fn) (void *p));
+int ht_remove(HT *htp, const char *key, void (*fn) (void *p));
 
 #endif // HASH_TABLE_H

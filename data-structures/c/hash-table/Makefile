@@ -1,6 +1,7 @@
 CC :=gcc
-CFLAGS :=-std=c17 -Wall -Wextra -ggdb
-CFLAGS +=-Wno-unused-result
+CFLAGS := -std=c17 -Wall -Wextra
+CFLAGS += -Wno-unused-result
+CFLAGS += -ggdb -Og
 
 SRC_DIR :=./src
 

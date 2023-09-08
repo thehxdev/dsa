@@ -328,9 +328,9 @@ ret:
 }
 
 
-void dll_free_nodes(DLL_t *dllp, Node *np) {
+void dll_free_nodes(Node *np) {
     if (np != NULL) {
-        dll_free_nodes(dllp, np->next);
+        dll_free_nodes(np->next);
         node_free(np);
     }
 }
@@ -338,8 +338,7 @@ void dll_free_nodes(DLL_t *dllp, Node *np) {
 
 void dll_free(DLL_t *dllp) {
     if (dllp != NULL) {
-        dll_free_nodes(dllp, dllp->head);
+        dll_free_nodes(dllp->head);
         free(dllp);
     }
 }
-

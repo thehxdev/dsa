@@ -100,7 +100,7 @@ int dll_deleteByAddr(DLL_t *dllp, Node *np);
 /**
  * Free all nodes in a DLL with recursion
  */
-void dll_free_nodes(DLL_t *dllp, Node *np);
+void dll_free_nodes(Node *np);
 
 
 /**

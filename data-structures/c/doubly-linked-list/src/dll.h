@@ -98,6 +98,12 @@ int dll_deleteByAddr(DLL_t *dllp, Node *np);
 
 
 /**
+ * Free all nodes in a DLL with recursion
+ */
+void dll_free_nodes(DLL_t *dllp, Node *np);
+
+
+/**
  * Free a doubly-linked-list from memory and 
  * it's nodes.
  */

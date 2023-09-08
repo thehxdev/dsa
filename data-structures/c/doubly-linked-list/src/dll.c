@@ -328,22 +328,18 @@ ret:
 }
 
 
+void dll_free_nodes(DLL_t *dllp, Node *np) {
+    if (np != NULL) {
+        dll_free_nodes(dllp, np->next);
+        node_free(np);
+    }
+}
+
+
 void dll_free(DLL_t *dllp) {
     if (dllp != NULL) {
-        Node *tmp  = dllp->head;
-        if (tmp == NULL) {
-            free(dllp);
-            return;
-        }
-        Node *next = tmp->next;
-
-        while (1) {
-            node_free(tmp);
-            tmp = next;
-            if (tmp == NULL)
-                break;
-            next = tmp->next;
-        }
+        dll_free_nodes(dllp, dllp->head);
         free(dllp);
     }
 }
+

@@ -2,14 +2,17 @@
 #include <stdlib.h>
 #include "vector.h"
 
+
 int main(void) {
-    Vector *v = vec_new(JustPtr);
-    char *str = to_str("Hello World!");
+    // Create a new vector
+    Vector *v = vec_new(20);
 
-    vec_append(v, str, 0);
-    printf("%s\n", VTOS(vec_get(v, 0)));
+    // Add numbers 0 to 20 to vector
+    for (int i = 0; i < 30; i++)
+        vec_append(v, i);
 
-    vec_free(v, free);
+    vec_print(v);
+    vec_free(v);
     return EXIT_SUCCESS;
 }
 

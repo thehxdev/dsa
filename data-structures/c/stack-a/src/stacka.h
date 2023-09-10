@@ -13,15 +13,15 @@
 typedef struct __stack {
     size_t cap;
     size_t len;
-    void **elems;
+    int *vals;
 } Stack;
 
 
-Stack *stk_new();
+Stack *stk_new(const size_t cap);
 
-int stk_push(Stack *sp, void *val, size_t size);
+int stk_push(Stack *sp, int val);
 
-void *stk_pop(Stack *sp);
+int stk_pop(Stack *sp);
 
 void stk_popD(Stack *sp);
 

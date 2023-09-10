@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 typedef struct __node {
-    void *data;
+    int data;
     struct __node *next;
     struct __node *prev;
 } Node;
@@ -21,13 +21,11 @@ typedef struct __queue {
 } Queue;
 
 
-Node *node_new(void *val, size_t size);
-
-void node_free(Node *np);
+Node *node_new(int val);
 
 Queue *q_new();
 
-int q_enqueue(Queue *qp, void *val, size_t size);
+int q_enqueue(Queue *qp, int val);
 
 Node *q_dequeue(Queue *qp);
 

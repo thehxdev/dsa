@@ -2,35 +2,18 @@
 #include <memory.h>
 #include "queue.h"
 
+#define check_then_free(p) if ((p)) free((p))
 
-Node *node_new(void *val, size_t size) {
-    if (val == NULL || size == 0)
-        return NULL;
-
+Node *node_new(int val) {
     Node *nn = (Node*) malloc(sizeof(Node));
     if (nn == NULL)
         return NULL;
 
-    nn->data = (void*) malloc(size);
-    if (nn->data == NULL) {
-        free(nn);
-        return NULL;
-    }
-
-    memcpy(nn->data, val, size);
+    nn->data = val;
     nn->next = NULL;
     nn->prev = NULL;
 
     return nn;
-}
-
-
-void node_free(Node *np) {
-    if (np) {
-        if (np->data)
-            free(np->data);
-        free(np);
-    }
 }
 
 
@@ -46,11 +29,11 @@ Queue *q_new() {
 }
 
 
-int q_enqueue(Queue *qp, void *val, size_t size) {
-    if (qp == NULL || val == NULL || size == 0)
+int q_enqueue(Queue *qp, int val) {
+    if (qp == NULL)
         return 1;
 
-    Node *nn = node_new(val, size);
+    Node *nn = node_new(val);
 
     if (qp->head == NULL) {
         qp->head = nn;
@@ -98,27 +81,19 @@ int q_dequeueD(Queue *qp) {
         rn->next->prev = NULL;
     rn->next = NULL;
 
-    node_free(rn);
+    free(rn);
     return 0;
 }
 
 
-void q_free(Queue *qp) {
-    if (qp) {
-        Node *tmp = qp->head;
-        if (tmp == NULL) {
-            free(qp);
-            return;
-        }
-
-        Node *next = tmp->next;
-        while (1) {
-            node_free(tmp);
-            tmp = next;
-            if (tmp == NULL)
-                break;
-            next = tmp->next;
-        }
-        free(qp);
+static void q_free_nodes(Node *np) {
+    if (np != NULL) {
+        q_free_nodes(np->next);
+        free(np);
     }
+}
+
+void q_free(Queue *qp) {
+    q_free_nodes(qp->head);
+    free(qp);
 }

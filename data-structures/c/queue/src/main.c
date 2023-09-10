@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "queue.h"
 
 
@@ -6,7 +7,7 @@ int main(void) {
     Queue *q = q_new();
 
     for (int i = 0; i < 10; i++)
-        q_enqueue(q, &i, sizeof(int));
+        q_enqueue(q, i);
 
 
     // rn -> removed node
@@ -14,11 +15,11 @@ int main(void) {
 
     Node *tmp = q->head;
     while (tmp != NULL) {
-        printf("%d\n", *(int*)tmp->data);
+        printf("%d\n", tmp->data);
         tmp = tmp->next;
     }
 
-    node_free(rn);
+    free(rn);
     q_free(q);
     return 0;
 }

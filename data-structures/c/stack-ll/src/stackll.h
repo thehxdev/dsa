@@ -8,10 +8,9 @@
 #include <stddef.h>
 
 typedef struct __node {
-    void *data;
+    int data;
     struct __node *prev;
     struct __node *next;
-    size_t size;
 } Node;
 
 
@@ -23,13 +22,7 @@ typedef struct __stack {
 /*
  * Create a new stack node
  */
-Node *node_new(void *val, size_t size);
-
-
-/*
- * Free a node from memory
- */
-void node_free(Node *np);
+Node *node_new(int val);
 
 
 /*
@@ -41,7 +34,7 @@ Stack *stk_new();
 /*
  * insert a new node to stack
  */
-int stk_push(Stack *sp, void *val , size_t size);
+int stk_push(Stack *sp, int val);
 
 
 /*

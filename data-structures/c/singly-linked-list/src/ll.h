@@ -5,8 +5,7 @@
 #include <stddef.h>
 
 typedef struct __node {
-    void *data;
-    size_t size;
+    int data;
     struct __node *next;
 } Node;
 
@@ -20,7 +19,7 @@ typedef struct __ll {
 /**
  * Create a new node
  */
-Node *node_new(void *val, size_t size);
+Node *node_new(int val);
 
 
 /**
@@ -38,63 +37,62 @@ LL_t *ll_new();
 /**
  * Add a new node to end of the LL as TAIL
  */
-int ll_append(LL_t *llp, void *val, size_t size);
+int ll_append(LL_t *llp, int val);
 
 
 /**
  * Add a new node to beginning of the LL as HEAD
  */
-int ll_prepend(LL_t *llp, void *val, size_t size);
+int ll_prepend(LL_t *llp, int val);
 
 
 /**
  * Find a node in LL by it's index
  */
-Node *ll_findNodeByIdx(LL_t *llp, size_t idx);
+Node *ll_find_by_idx(LL_t *llp, size_t idx);
 
 
 /**
  * Find a node in LL by it's value
  * (Recursive implementation)
  */
-Node *ll_findNodeByVal_Rec(Node *np, void *val, size_t size);
+Node *ll_find_by_val_Rec(Node *np, int val);
 
 
 /**
  * Find a node in LL by it's value
  */
-Node *ll_findNodeByVal(LL_t *llp, void *val, size_t size);
+Node *ll_find_by_val(LL_t *llp, int val);
 
 
 /**
  * Insert a new node to LL with a specific index
  */
-int ll_insertAtIdx(LL_t *llp, size_t idx, void *val, size_t size);
+int ll_insert_at_idx(LL_t *llp, size_t idx, int val);
 
 
 /**
  * Insert a new node after a specific Node in the LL
  */
-int ll_insertAfterNode(LL_t *llp, Node *np, void *val, size_t size);
+int ll_insert_after_node(LL_t *llp, Node *np, int val);
 
 
 /**
  * delete a value from LL by it's value
  */
-int ll_deleteByVal(LL_t *llp, void *val, size_t size);
+int ll_delete_by_val(LL_t *llp, int val);
 
 
 /**
  * Delete a node from LL by it's index
  */
-int ll_deleteByIdx(LL_t *llp, size_t idx);
+int ll_delete_by_idx(LL_t *llp, size_t idx);
 
 
 /**
  * Free a singly-linked-list from memory and 
  * it's nodes.
  */
-void ll_free(LL_t *llp);
+void ll_free(Node *np);
 
 #endif // LL_H
-

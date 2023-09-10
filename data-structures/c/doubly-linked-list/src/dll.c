@@ -3,39 +3,18 @@
 #include <memory.h>
 #include "dll.h"
 
+#define check_then_free(p) if((p)) free((p))
 
-Node *node_new(void *val, size_t size) {
-    if (val == NULL || size == 0)
-        return NULL;
-
+Node *node_new(int val) {
     Node *nn = (Node*) malloc(sizeof(Node));
     if (nn == NULL)
         return NULL;
 
-    nn->data = (void*) malloc(size);
-    if (nn->data == NULL) {
-        free(nn);
-        return NULL;
-    }
-
-    memmove(nn->data, val, size);
-    nn->size = size;
+    nn->data = val;
     nn->next = NULL;
     nn->prev = NULL;
 
     return nn;
-}
-
-
-void node_free(Node *np) {
-    if (np) {
-        if (np->data) {
-            free(np->data);
-            np->data = NULL;
-        }
-        free(np);
-        np = NULL;
-    }
 }
 
 
@@ -51,59 +30,50 @@ DLL_t *dll_new() {
 }
 
 
-int dll_append(DLL_t *dllp, void *val, size_t size) {
-    int stat = 0;
-    Node *nn = node_new(val, size);
-    if (nn == NULL) {
-        stat = 1;
-        goto ret;
-    }
+int dll_append(DLL_t *dllp, int val) {
+    Node *nn = node_new(val);
+    if (nn == NULL)
+        return 1;
 
     if (dllp->head == NULL) {
         dllp->head = nn;
         dllp->tail = nn;
-        goto ret;
+        return 0;
     }
 
     nn->prev = dllp->tail;
     dllp->tail->next = nn;
     dllp->tail = nn;
 
-ret:
-    return stat;
+    return 0;
 }
 
 
-int dll_prepend(DLL_t *dllp, void *val, size_t size) {
-    int stat = 0;
-    Node *nn = node_new(val, size);
-    if (nn == NULL) {
-        stat = 1;
-        goto ret;
-    }
+int dll_prepend(DLL_t *dllp, int val) {
+    Node *nn = node_new(val);
+    if (nn == NULL)
+        return 1;
 
     if (dllp->head == NULL) {
         dllp->head = nn;
         dllp->tail = nn;
-        goto ret;
     }
 
     dllp->head->prev = nn;
     nn->next   = dllp->head;
     dllp->head = nn;
 
-ret:
-    return stat;
+    return 0;
 }
 
 
-Node *dll_findNodeByIdx(DLL_t *dllp, size_t idx) {
+Node *dll_find_by_idx(DLL_t *dllp, size_t idx) {
     if (dllp == NULL)
         return NULL;
 
     Node *tmp = dllp->head;
     if (idx == 0)
-        goto ret;
+        return tmp;
 
     for (uint32_t i = 1; i <= idx; i++) {
         tmp = tmp->next;
@@ -111,18 +81,17 @@ Node *dll_findNodeByIdx(DLL_t *dllp, size_t idx) {
             return NULL;
     }
 
-ret:
     return tmp;
 }
 
 
-Node *dll_findNodeByVal(DLL_t *dllp, void *val, size_t size) {
-    if (dllp == NULL || val == NULL || size == 0)
+Node *dll_find_by_val(DLL_t *dllp, int val) {
+    if (dllp == NULL)
         return NULL;
 
     Node *tmp = dllp->head;
     while (tmp != NULL) {
-        if (memcmp(tmp->data, val, size) == 0)
+        if (tmp->data == val)
             return tmp;
 
         tmp = tmp->next;
@@ -132,75 +101,26 @@ Node *dll_findNodeByVal(DLL_t *dllp, void *val, size_t size) {
 }
 
 
-Node *dll_findNodeByVal_Rec(Node *np, void *val, size_t size) {
-    if (np == NULL || val == NULL || size == 0)
+Node *dll_find_by_val_Rec(Node *np, int val) {
+    if (np == NULL)
         return NULL;
 
-    if (memcmp(np->data, val, size) != 0)
-        dll_findNodeByVal_Rec(np->next, val, size);
+    if (np->data != val)
+        dll_find_by_val_Rec(np->next, val);
 
     return np;
 }
 
 
-int dll_insertAtIdx(DLL_t *dllp, size_t idx, void *val, size_t size) {
-    int stat = 0;
-    if (dllp == NULL || val == NULL || size == 0) {
-        stat = 1;
-        goto ret;
-    }
+int dll_insert_after(DLL_t *dllp, Node *np, int val) {
+    if (dllp == NULL || np == NULL)
+        return 1;
+    if (dllp->head == NULL)
+        return 1;
 
-    if (idx == 0) {
-        stat = dll_prepend(dllp, val, size);
-        goto ret;
-    }
-
-    Node *tmp = dll_findNodeByIdx(dllp, idx);
-    if (tmp == NULL) {
-        stat = 1;
-        goto ret;
-    }
-
-    if (tmp->next == NULL) {
-        stat = dll_append(dllp, val, size);
-        goto ret;
-    }
-
-    Node *nn = node_new(val, size);
-    if (nn == NULL) {
-        stat = 1;
-        goto ret;
-    }
-
-    nn->next = tmp;
-    nn->prev = tmp->prev;
-    tmp->prev->next = nn;
-    tmp->prev = nn;
-
-    if (nn->next == NULL)
-        dllp->tail = nn;
-
-ret:
-    return stat;
-}
-
-
-int dll_insertAfterNode(DLL_t *dllp, Node *np, void *val, size_t size) {
-    int stat = 0;
-    if (dllp == NULL || np == NULL || val == NULL || size == 0) {
-        stat = 1;
-        goto ret;
-    }
-    if (dllp->head == NULL) {
-        stat = 1;
-        goto ret;
-    }
-
-    Node *nn = node_new(val, size);
-    if (nn == NULL) {
-        stat = 1;
-        goto ret;
-    }
+    Node *nn = node_new(val);
+    if (nn == NULL)
+        return 1;
 
     nn->next = np->next;
     nn->prev = np;
@@ -210,23 +130,17 @@ int dll_insertAfterNode(DLL_t *dllp, Node *np, void *val, size_t size) {
     if (nn->next == NULL)
         dllp->tail = nn;
 
-ret:
-    return stat;
+    return 0;
 }
 
 
-int dll_deleteByVal(DLL_t *dllp, void *val, size_t size) {
-    int stat = 0;
-    if (dllp == NULL || val == NULL || size == 0) {
-        stat = 1;
-        goto ret;
-    }
-    if (dllp->head == NULL) {
-        stat = 1;
-        goto ret;
-    }
+int dll_delete_by_val(DLL_t *dllp, int val) {
+    if (dllp == NULL)
+        return 1;
+    if (dllp->head == NULL)
+        return 1;
 
-    Node *tmp = dll_findNodeByVal(dllp, val, size);
+    Node *tmp = dll_find_by_val(dllp, val);
 
     if (tmp->prev == NULL && tmp->next == NULL) {
         dllp->head = NULL;
@@ -245,61 +159,16 @@ int dll_deleteByVal(DLL_t *dllp, void *val, size_t size) {
         tmp->next->prev = tmp->prev;
     }
 
-    node_free(tmp);
-ret:
-    return stat;
+    free(tmp);
+    return 0;
 }
 
 
-int dll_deleteByIdx(DLL_t *dllp, size_t idx) {
-    int stat = 0;
-    if (dllp == NULL) {
-        stat = 1;
-        goto ret;
-    }
-    if (dllp->head == NULL) {
-        stat = 1;
-        goto ret;
-    }
-    Node *tmp = dll_findNodeByIdx(dllp, idx);
-    if (tmp == NULL) {
-        stat = 1;
-        goto ret;
-    }
-
-    if (tmp->prev == NULL) {
-        if (tmp->next != NULL) {
-            tmp->next->prev = NULL;
-            dllp->head = tmp->next;
-            goto free_ret;
-        }
-        dllp->head = NULL;
-        dllp->tail = NULL;
-        goto free_ret;
-    }
-
-    tmp->prev->next = tmp->next;
-    if (tmp->next) {
-        tmp->next->prev = tmp->prev;
-    }
-
-free_ret:
-    node_free(tmp);
-ret:
-    return stat;
-}
-
-
-int dll_deleteByAddr(DLL_t *dllp, Node *np) {
-    int stat = 0;
-    if (dllp == NULL || np == NULL) {
-        stat = 1;
-        goto ret;
-    }
-    if (dllp->head == NULL || dllp->tail == NULL) {
-        stat = 1;
-        goto ret;
-    }
+int dll_delete(DLL_t *dllp, Node *np) {
+    if (dllp == NULL || np == NULL)
+        return 1;
+    if (dllp->head == NULL || dllp->tail == NULL)
+        return 1;
 
     /*
      * check if np is the only node in DLL
@@ -321,17 +190,16 @@ int dll_deleteByAddr(DLL_t *dllp, Node *np) {
         np->prev->next = np->next;
         np->next->prev = np->prev;
     }
-    node_free(np);
 
-ret:
-    return stat;
+    free(np);
+    return 0;
 }
 
 
 void dll_free_nodes(Node *np) {
     if (np != NULL) {
         dll_free_nodes(np->next);
-        node_free(np);
+        free(np);
     }
 }
 

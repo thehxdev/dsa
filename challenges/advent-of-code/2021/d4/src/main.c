@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     Game *game = parse_input(fp);
 
     int winner_score = solve_ch1(game);
-    printf("Challenge 1: %d\n", winner_score);
+    printf("Part 1: %d\n", winner_score);
 
     game_free(game);
     fclose(fp);

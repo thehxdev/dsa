@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -std=c17 -Wall -Wextra -Wshadow -pedantic
+CFLAGS := -std=gnu17 -Wall -Wextra -Wshadow -pedantic
 CFLAGS += -Wno-unused-result
 # CFLAGS += -ggdb -Og
 CFLAGS += -O3

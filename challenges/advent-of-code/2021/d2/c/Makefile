@@ -1,8 +1,8 @@
 CC := gcc
 CFLAGS := -std=gnu17 -Wall -Wextra
 CFLAGS += -Wno-unused-result
-CFLAGS += -ggdb -Og
-# CFLAGS += -O3
+# CFLAGS += -ggdb -O3
+CFLAGS += -O3
 
 SRC_DIR :=./src
 

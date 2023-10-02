@@ -1,3 +1,4 @@
 .ccls*
 *.o
 a.out
+target/

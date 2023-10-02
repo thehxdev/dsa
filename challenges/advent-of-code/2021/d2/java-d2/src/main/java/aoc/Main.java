@@ -52,8 +52,8 @@ public class Main {
         }
         fileReader.close();
 
-        System.out.printf("Part 1: %d\n", s1.horizontal * s1.depth);
-        System.out.printf("Part 2: %d\n", s2.horizontal * s2.depth);
+        System.out.printf("Part 1: %d\n", s1.currentLocation());
+        System.out.printf("Part 2: %d\n", s2.currentLocation());
     }
 
 

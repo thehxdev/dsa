@@ -1,4 +1,4 @@
-package aoc;
+package aoc2021.d2;
 
 class Submarine {
     public int horizontal = 0;

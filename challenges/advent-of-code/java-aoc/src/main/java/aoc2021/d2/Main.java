@@ -1,4 +1,4 @@
-package aoc;
+package aoc2021.d2;
 
 import java.io.File;
 import java.io.FileNotFoundException;

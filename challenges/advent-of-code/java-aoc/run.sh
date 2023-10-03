@@ -5,7 +5,9 @@ TARGET="./target"
 JAR_FILE="./target/java-aoc-1.0-SNAPSHOT.jar"
 
 if [[ $# -ne 2 ]]; then
-    echo "Usage: bash run.sh <Year> <Day>" ; exit 1
+    echo "Usage: bash run.sh <Year> <Day>"
+    echo "Exampe: bash run.sh 2021 2"
+    exit 1
 fi
 
 function log() {
@@ -24,9 +26,11 @@ if ! command -v mvn >/dev/null; then
 fi
 
 if [[ ! -e "$TARGET" ]]; then
+    log "INFO" "Building project with Maven..."
     mvn package || exit 1
+    log "INFO" "Project Built!"
     sleep 2
     clear
 fi
 
-java -cp "$JAR_FILE" "aoc$1.d$2.Main" "$INPUT_FILES/$1-d$2"
+java -cp "$JAR_FILE" "aoc$1.d$2.Main" "$INPUT_FILES/$1-d$2" || exit 1

@@ -6,9 +6,9 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        String programName = "practice";
+        String programName = "PROGRAM";
         if (args.length != 1) {
-            System.out.printf("Usage: %s <file-path>\n", programName);
+            System.err.printf("Usage: %s <file-path>\n", programName);
             System.exit(1);
         }
 
@@ -52,6 +52,7 @@ public class Main {
         }
         fileReader.close();
 
+        System.out.println("== AOC 2021 Day 2 ==");
         System.out.printf("Part 1: %d\n", s1.currentLocation());
         System.out.printf("Part 2: %d\n", s2.currentLocation());
     }

@@ -4,7 +4,7 @@
     nativeBuildInputs = with pkgs.buildPackages; [
         go
         gopls
-        gdb # for debugging
+        gdb
     ];
 
     #shellHook = ''

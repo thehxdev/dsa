@@ -11,9 +11,9 @@ static int charToInt(const char _c) {
 }
 
 
-static int firstNumIdx(const char *_s) {
-    for (unsigned int i = 0; i < strlen(_s); i++) {
-        if (_s[i] >= 48 && _s[i] <= 57) {
+static int firstNumIdx(const char *str) {
+    for (unsigned int i = 0; i < strlen(str); i++) {
+        if (str[i] >= 48 && str[i] <= 57) {
             return i;
         }
     }
@@ -22,10 +22,10 @@ static int firstNumIdx(const char *_s) {
 }
 
 
-static int lastNumIdx(const char *_s) {
+static int lastNumIdx(const char *str) {
     unsigned int i = 0;
-    for (; i < strlen(_s); i++) {
-        if (_s[i] < 48 || _s[i] > 57) {
+    for (; i < strlen(str); i++) {
+        if (str[i] < 48 || str[i] > 57) {
             return (i == 0) ? 0 : i - 1;
         }
     }
@@ -33,18 +33,18 @@ static int lastNumIdx(const char *_s) {
 }
 
 
-extern int parseInt(const char *_s) {
+extern int parseInt(const char *str) {
     int firstNum, lastNum;
 
-    firstNum = firstNumIdx(_s);
+    firstNum = firstNumIdx(str);
     if (firstNum == -1) {
         return 0;
     }
-    lastNum = lastNumIdx((_s + firstNum)) + firstNum;
+    lastNum = lastNumIdx((str + firstNum)) + firstNum;
 
     int result = 0;
     for (int i = lastNum; i >= firstNum; i--) {
-        result += (charToInt(_s[i]) * pow(10, (lastNum - i)));
+        result += (charToInt(str[i]) * pow(10, (lastNum - i)));
     }
 
     return result;

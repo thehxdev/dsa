@@ -5,24 +5,21 @@
  * Implementation of a general Tree data-structure
  */
 
-
 #include <stddef.h>
 
 struct __node;
 
-struct __node_list {
+typedef struct __node_list {
     struct __node **nodes;
     size_t len;
     size_t cap;
-};
-typedef struct __node_list NodeList;
+} NodeList;
 
-struct __node {
+typedef struct __node {
     int val;
     struct __node *parent;
     NodeList *children;
-};
-typedef struct __node Node;
+} Node;
 
 
 typedef struct __gtree {

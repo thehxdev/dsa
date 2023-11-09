@@ -35,10 +35,14 @@ Solutions for coding challenges.
     - [day 4](https://github.com/thehxdev/algo-ds/tree/main/challenges/advent-of-code/2021/d4)
     - [day 6](https://github.com/thehxdev/algo-ds/tree/main/challenges/advent-of-code/2021/d6)
 
+---
+
 ### LeetCode
 
 LeetCode Problems:
 - [1](https://github.com/thehxdev/algo-ds/tree/main/challenges/leetcode/1)
+
+---
 
 ### Not Categorized
 

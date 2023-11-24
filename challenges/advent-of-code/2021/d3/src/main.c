@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    char buff[32] = { 0 };
+    char buff[BUFF_SIZE] = { 0 };
     FILE *fp = fopen(argv[1], "r");
     if (!fp) {
         fprintf(stderr, "[ERROR] Could not open %s file\n", argv[1]);

@@ -1,8 +1,11 @@
-CC=gcc
-FLAGS=-std=c17 -Wall -Wextra -pedantic
-FLAGS+=-Werror -Wno-unused-result -I../../../libchall/c
-INPUT=main.c
+CC := gcc
+CFLAGS := -std=c99 -Wall -Wextra -Wpedantic -Wno-unused-result
+SRC_FILES := $(wildcard ./*.c)
+BIN := a.out
 
 
-default:
-	$(CC) $(FLAGS) $(INPUT)
+$(BIN):
+	$(CC) $(CFLAGS) -o $(BIN) $(SRC_FILES)
+
+clean:
+	rm -rf $(BIN)

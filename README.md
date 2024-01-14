@@ -24,6 +24,7 @@ My implementation of algorithms and data structures.
 
 - Searching
     - [Linear-Search](https://github.com/thehxdev/algo-dt/tree/main/algorithms/searching/linear-search)
+    - [Binary-Search](https://github.com/thehxdev/algo-dt/tree/main/algorithms/searching/binary-search)
 
 
 ## Coding Challenges

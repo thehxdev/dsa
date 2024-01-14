@@ -5,23 +5,25 @@ My implementation of algorithms and data structures.
 
 ## Data Structures
 
-- C
-    - [Vector (Dynamic Array)](https://github.com/thehxdev/algo-dt/tree/main/data-structures/vector)
-    - [Singly Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/singly-linked-list)
-    - [Doubly Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/doubly-linked-list)
-    - [Stack using Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/stack-ll)
-    - [Stack using Array](https://github.com/thehxdev/algo-ds/tree/main/data-structures/stack-a)
-    - [Queue](https://github.com/thehxdev/algo-ds/tree/main/data-structures/queue)
-    - [Hash Table](https://github.com/thehxdev/algo-ds/tree/main/data-structures/hash-table)
-    - [Binary Tree](https://github.com/thehxdev/algo-ds/tree/main/data-structures/b-tree)
-    - [General Tree](https://github.com/thehxdev/algo-ds/tree/main/data-structures/general-tree)
-    - [String](https://github.com/thehxdev/algo-ds/tree/main/data-structures/string)
+- [Vector (Dynamic Array)](https://github.com/thehxdev/algo-dt/tree/main/data-structures/vector)
+- [Singly Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/singly-linked-list)
+- [Doubly Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/doubly-linked-list)
+- [Stack using Linked-List](https://github.com/thehxdev/algo-ds/tree/main/data-structures/stack-ll)
+- [Stack using Array](https://github.com/thehxdev/algo-ds/tree/main/data-structures/stack-a)
+- [Queue](https://github.com/thehxdev/algo-ds/tree/main/data-structures/queue)
+- [Hash Table](https://github.com/thehxdev/algo-ds/tree/main/data-structures/hash-table)
+- [Binary Tree](https://github.com/thehxdev/algo-ds/tree/main/data-structures/b-tree)
+- [General Tree](https://github.com/thehxdev/algo-ds/tree/main/data-structures/general-tree)
+- [String](https://github.com/thehxdev/algo-ds/tree/main/data-structures/string)
 
 
 ## Algorithms
 
-- C
+- Sorting
     - [Bubble-Sort](https://github.com/thehxdev/algo-dt/tree/main/algorithms/sorting/bubble-sort)
+
+- Searching
+    - [Linear-Search](https://github.com/thehxdev/algo-dt/tree/main/algorithms/searching/linear-search)
 
 
 ## Coding Challenges

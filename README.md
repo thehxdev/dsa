@@ -18,6 +18,12 @@ My implementation of algorithms and data structures.
     - [String](https://github.com/thehxdev/algo-ds/tree/main/data-structures/string)
 
 
+## Algorithms
+
+- C
+    - [Bubble-Sort](https://github.com/thehxdev/algo-dt/tree/main/algorithms/sorting/bubble-sort)
+
+
 ## Coding Challenges
 
 Solutions for coding challenges.

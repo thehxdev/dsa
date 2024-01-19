@@ -17,6 +17,11 @@ My implementation of algorithms and data structures.
 - [String](https://github.com/thehxdev/algo-ds/tree/main/data-structures/string)
 
 
+### Generic DTs in C
+
+- [Vector (Dynamic Array)](https://github.com/thehxdev/algo-dt/tree/main/data-structures/generic-dt/vector)
+
+
 ## Algorithms
 
 - Sorting

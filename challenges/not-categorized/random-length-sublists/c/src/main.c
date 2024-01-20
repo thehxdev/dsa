@@ -8,9 +8,15 @@
 int main(void) {
     srand(time(NULL));
 
+    size_t i;
     List *nums = list_new(20);
     for (size_t i = 0; i < 20; i++)
         list_append(nums, &i, sizeof(i));
+
+    printf("Initial List = { ");
+    for (i = 0; i < nums->len; i++)
+        printf("%d ", *(int*)nums->vals[i]);
+    printf("}\n\n");
 
     // Just print the inner lists and free them
     // while printing them.
@@ -18,7 +24,7 @@ int main(void) {
     // because when calling `list_free` on `breaked` list
     // at the end of the program, we encounter a double-free error.
     List *breaked = list_breakdown_rand(nums, 5);
-    for (size_t i = 0; i < breaked->len; i++) {
+    for (i = 0; i < breaked->len; i++) {
         List *tmp = (List*)breaked->vals[i];
         printf("chunk %lu -> [ ", i);
         for (size_t j = 0; j < tmp->len; j++) {

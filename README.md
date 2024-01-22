@@ -20,6 +20,7 @@ My implementation of algorithms and data structures.
 ### Generic DTs in C
 
 - [Vector (Dynamic Array)](https://github.com/thehxdev/algo-dt/tree/main/data-structures/generic-dt/vector)
+- [Double Linked-List](https://github.com/thehxdev/algo-dt/tree/main/data-structures/generic-dt/double-linked-list)
 
 
 ## Algorithms

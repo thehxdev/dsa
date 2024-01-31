@@ -6,3 +6,6 @@ target/
 .classpath
 .project
 *.class
+vgcore*
+.cache/
+compile_flags.txt

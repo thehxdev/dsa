@@ -4,7 +4,12 @@
 #include <memory.h>
 #include "array.h"
 
-#define check_then_free(p) if ((p)) free((p))
+// #define xfree(p) do { free((p)); (p) = NULL;  } while (0)
+void xfree(void *p) {
+    free(p);
+    p = NULL;
+}
+
 
 // generate a random number between @lower and @upper (inclusive)
 int gen_rand(int lower, int upper) {
@@ -14,31 +19,28 @@ int gen_rand(int lower, int upper) {
 
 
 // create a new dynamic array
-List *list_new(const size_t cap) {
+List *list_new(const size_t cap, free_func fn) {
     List *l = (List*) malloc(sizeof(List));
     if (l == NULL)
         return NULL;
 
-    l->vals = (void**) calloc(sizeof(void*), cap);
-    if (l->vals == NULL) {
-        free(l);
-        return NULL;
-    }
-
-    l->cap = cap;
-    l->len = 0;
+    l->vals = NULL;
+    l->cap  = cap;
+    l->len  = 0;
+    l->val_free_fn = fn;
 
     return l;
 }
 
 
 // free a dynamic array
-void list_free(List *lp) {
-    if (lp) {
-        for (size_t i = 0; i < lp->len; i++)
-            check_then_free(lp->vals[i]);
-        check_then_free(lp->vals);
-        free(lp);
+void list_free(void *lp) {
+    List *l = (List*)lp;
+    if (l) {
+        for (size_t i = 0; i < l->len; i++)
+            l->val_free_fn(l->vals[i]);
+        xfree(l->vals);
+        xfree(l);
     }
 }
 
@@ -59,8 +61,9 @@ int list_append(List *lp, void *val, size_t bytes) {
         }
     }
 
-    lp->vals[lp->len] = (void*) malloc(bytes);
-    memmove(lp->vals[lp->len], val, bytes);
+    void **tmp = &lp->vals[lp->len];
+    *tmp = malloc(bytes);
+    memmove(*tmp, val, bytes);
     lp->len += 1;
 
     return 0;
@@ -74,7 +77,7 @@ List *list_breakdown_rand(List *lp, const size_t max_len) {
         return lp;
 
     size_t right = 0, left = 0; // right and left pointer
-    List *super_list = list_new(20); // super list to store smaller lists
+    List *super_list = list_new(20, list_free); // super list to store smaller lists
     List *tmp = NULL; // tmp list to create small lists
     while (right < lp->len) {
         left = (size_t) gen_rand(right, right + max_len - 1);
@@ -83,21 +86,34 @@ List *list_breakdown_rand(List *lp, const size_t max_len) {
         else if (left == right)
             continue; // don't create empty lists
 
-        tmp = list_new(max_len + 1);
+        tmp = list_new(max_len + 1, xfree);
         for (size_t i = right; i <= left; i++)
-            list_append(tmp, (int*)lp->vals[i], sizeof(int));
+            list_append(tmp, lp->vals[i], sizeof(int));
 
         // Just store the `tmp` list as pointer and not all of it
-        list_append(super_list, (List*)tmp, sizeof(List));
+        list_append(super_list, tmp, sizeof(List));
 
         // free tmp list but NOT it's data
         // because we need it in super list
-        free(tmp);
+        xfree(tmp);
         right = left + 1;
     }
 
     return super_list;
 }
 
-// TODO
-List *list_merge_inner(List *lp);
+
+List *list_merge_inner(List *lp) {
+    if (!lp)
+        return NULL;
+
+    size_t i, j;
+    List *tmp, *new = list_new(25, xfree);
+    for (i = 0; i < lp->len; i++) {
+        tmp = (List*) lp->vals[i];
+        for (j = 0; j < tmp->len; j++)
+            list_append(new, tmp->vals[j], sizeof(int));
+    }
+
+    return new;
+}

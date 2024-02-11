@@ -9,14 +9,14 @@ int main(void) {
     srand(time(NULL));
 
     size_t i;
-    List *nums = list_new(20);
+    List *nums = list_new(20, xfree);
     for (size_t i = 0; i < 20; i++)
         list_append(nums, &i, sizeof(i));
 
-    printf("Initial List = { ");
+    printf("Initial List = [ ");
     for (i = 0; i < nums->len; i++)
         printf("%d ", *(int*)nums->vals[i]);
-    printf("}\n\n");
+    printf("]\n\n");
 
     // Just print the inner lists and free them
     // while printing them.
@@ -27,15 +27,20 @@ int main(void) {
     for (i = 0; i < breaked->len; i++) {
         List *tmp = (List*)breaked->vals[i];
         printf("chunk %lu -> [ ", i);
-        for (size_t j = 0; j < tmp->len; j++) {
+        for (size_t j = 0; j < tmp->len; j++)
             printf("%d ", *(int*)tmp->vals[j]);
-            free(tmp->vals[j]);
-        }
-        free(tmp->vals);
         printf("]\n");
     }
 
+    List *merged = list_merge_inner(breaked);
+    printf("\nMerged = [ ");
+    for (i = 0; i < merged->len; i++) {
+        printf("%d ", *(int*)merged->vals[i]);
+    }
+    printf("]\n");
+
     list_free(breaked);
+    list_free(merged);
     list_free(nums);
     return 0;
 }

@@ -3,18 +3,23 @@
 
 #include <stddef.h>
 
+
+typedef void (*free_func)(void*);
+
 typedef struct __list {
     void **vals;
     size_t len;
     size_t cap;
+    free_func val_free_fn;
 } List;
 
+void xfree(void *p);
 
 int gen_rand(int lower, int upper);
 
-List *list_new(const size_t cap);
+List *list_new(const size_t cap, free_func fn);
 
-void list_free(List *lp);
+void list_free(void *lp);
 
 int list_append(List *lp, void *val, size_t bytes);
 

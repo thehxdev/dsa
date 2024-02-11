@@ -18,11 +18,6 @@ int main(void) {
         printf("%d ", *(int*)nums->vals[i]);
     printf("]\n\n");
 
-    // Just print the inner lists and free them
-    // while printing them.
-    // I don't use `list_free` function on sub-lists
-    // because when calling `list_free` on `breaked` list
-    // at the end of the program, we encounter a double-free error.
     List *breaked = list_breakdown_rand(nums, 5);
     for (i = 0; i < breaked->len; i++) {
         List *tmp = (List*)breaked->vals[i];

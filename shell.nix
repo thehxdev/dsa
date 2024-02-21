@@ -10,11 +10,12 @@ pkgs.mkShell {
 
         ## debugging stuff
         gdb
+        gf
         valgrind
     ];
 
     shellHook = ''
-    CC=clang
-    CXX=clang++
+    export CC=clang
+    export CXX=clang++
     '';
 }

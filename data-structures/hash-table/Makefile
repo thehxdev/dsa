@@ -1,4 +1,4 @@
-CC :=gcc
+CC := gcc
 CFLAGS := -std=c17 -Wall -Wextra
 CFLAGS += -Wno-unused-result
 CFLAGS += -ggdb -Og
@@ -11,10 +11,10 @@ BIN := a.out
 
 
 $(BIN): $(OBJ_FILES)
-	$(CC) -o $(BIN) $(wildcard $(SRC_DIR)/*.o)
+	$(CC) -o $(BIN) $(OBJ_FILES)
 
 %.o: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -c $(SRC_DIR)/$*.c
+	$(CC) $(CFLAGS) -c $<
 
 clean:
 	rm -rf $(BIN) $(SRC_DIR)/*.o

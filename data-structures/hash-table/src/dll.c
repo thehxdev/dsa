@@ -8,7 +8,7 @@ Node *node_new(const char *key) {
     if (node == NULL)
         return NULL;
 
-    node->key = (char*) calloc(sizeof(char), strlen(key));
+    node->key = (char*) calloc(sizeof(char), strlen(key) + 1);
     if (node->key == NULL) {
         free(node);
         return NULL;

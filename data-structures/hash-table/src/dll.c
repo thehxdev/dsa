@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include "ht.h"
 #include "dll.h"
 
 

@@ -27,6 +27,9 @@ int main(void) {
     res = str_substr_found_rec("Hello World!", "Hello World!");
     assert(res == 1);
 
+    res = str_substr_found_rec("Hello rld World!", "rld!");
+    assert(res == 1);
+
     printf("[OK] All tests for recursive function passed!\n");
 
 
@@ -43,6 +46,9 @@ int main(void) {
 
     res = str_substr_found("Hello World!", "rld.");
     assert(res == 0);
+
+    res = str_substr_found("Hello rld World!", "rld!");
+    assert(res == 1);
 
     printf("[OK] All tests for loop based function passed!\n");
 
@@ -69,12 +75,19 @@ int str_substr_found_rec(char *source, char *query) {
 
 // while loop version
 int str_substr_found(char *source, char *query) {
-    while (*source != *query && *source) source++;
-    if (*source == '\0')
+    register char *s = source;
+    register char *q;
+again:
+    q = query;
+    while (*s != *q && *s) s++;
+    if (*s == '\0')
         return 0;
-    while (*source == *query && *source && *query) {
-        source++;
-        query++;
+    while (*s && *q) {
+        if (*s == *q) {
+            s++;
+            q++;
+        } else
+            goto again;
     }
-    return (*query == '\0');
+    return (*q == '\0');
 }

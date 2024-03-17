@@ -35,10 +35,10 @@ substr_found:
     inc     rdi
     inc     rsi
 .L3:
-    cmp     byte[rdi], 0
-    je      .ret0
     cmp     byte[rsi], 0
     je      .ret1
+    cmp     byte[rdi], 0
+    je      .ret0
     mov     al, byte[rdi]
     mov     dl, byte[rsi]
     cmp     al, dl

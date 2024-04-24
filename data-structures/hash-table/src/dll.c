@@ -52,10 +52,12 @@ DLL *dll_new(size_t cap) {
     if (list == NULL)
         return NULL;
 
-    list->head = NULL;
-    list->tail = NULL;
-    list->len  = 0;
-    list->cap  = cap;
+    *list = (DLL) {
+        .head = NULL,
+        .tail = NULL,
+        .len   = 0,
+        .cap   = cap,
+    };
 
     return list;
 }

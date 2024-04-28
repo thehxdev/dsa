@@ -6,9 +6,9 @@
 // O(n^2)
 bool containsDuplicate(int* nums, int numsSize) {
     int i, j, curr;
-    for (int i = 0; i < numsSize; i++) {
+    for (i = 0; i < numsSize; i++) {
         curr = nums[i];
-        for (int j = i+1; j < numsSize; j++)
+        for (j = i+1; j < numsSize; j++)
             if (curr == nums[j])
                 return true;
     }

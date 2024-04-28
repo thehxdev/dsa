@@ -7,16 +7,13 @@ int* twoSum(int* nums, int numsSize, int target, int* returnSize);
 
 int main(void) {
     /* one of the test cases */
-    int *nums = (int*) calloc(sizeof(int), 4);
-    nums[0] = 2;
-    nums[1] = 7;
-    nums[2] = 11;
-    nums[3] = 15;
+    int nums[] = { 2, 7, 11, 15 };
+    size_t nums_len = sizeof(nums) / sizeof(nums[0]);
 
     int *retsize = (int*) malloc(sizeof(int));
     *retsize = 0;
 
-    int *result = twoSum(nums, 4, 9, retsize);
+    int *result = twoSum(nums, nums_len, 9, retsize);
     if (result == NULL)
         return 1;
 

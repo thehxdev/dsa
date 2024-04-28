@@ -1,14 +1,9 @@
+#ifndef _GNU_SOURCE
+    #define _GNU_SOURCE // For `strdup` and `strtok_r`
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#if !defined (__USE_XOPEN_EXTENDED)
-# define __USE_XOPEN_EXTENDED // for strdup
-#endif // __USE_XOPEN_EXTENDED
-
-#if !defined (__USE_POSIX) && !defined (_WIN32)
-# define __USE_POSIX // for strtok_r
-#endif // __USE_POSIX
-
 #include <string.h>
 #include "vector.h"
 #include "board.h"

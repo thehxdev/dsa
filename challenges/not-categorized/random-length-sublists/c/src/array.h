@@ -15,7 +15,7 @@ typedef struct __list {
 
 void xfree(void *p);
 
-int gen_rand(int lower, int upper);
+long gen_rand(long lower, long upper);
 
 List *list_new(const size_t cap, free_func fn);
 

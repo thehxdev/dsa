@@ -12,8 +12,8 @@ void xfree(void *p) {
 
 
 // generate a random number between @lower and @upper (inclusive)
-int gen_rand(int lower, int upper) {
-    int rand_num = ((rand() % (upper - lower + 1)) + lower);
+long gen_rand(long lower, long upper) {
+    long rand_num = (rand() % (upper - lower + 1)) + lower;
     return rand_num;
 }
 
@@ -24,10 +24,12 @@ List *list_new(const size_t cap, free_func fn) {
     if (l == NULL)
         return NULL;
 
-    l->vals = NULL;
-    l->cap  = cap;
-    l->len  = 0;
-    l->val_free_fn = fn;
+    *l = (List) {
+        .vals = NULL,
+        .cap  = cap,
+        .len  = 0,
+        .val_free_fn = fn,
+    };
 
     return l;
 }

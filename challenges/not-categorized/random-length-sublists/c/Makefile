@@ -1,6 +1,6 @@
 CC := gcc
 CFLAGS := -std=c17 -Wall -Wextra -pedantic
-CFLAGS += -Werror -Wno-unused-result -Wno-unused-variable
+CFLAGS += -Wno-unused-result -Wno-unused-variable
 CFLAGS += -ggdb -Og
 LIBS :=
 

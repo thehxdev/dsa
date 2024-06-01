@@ -12,7 +12,7 @@ BIN := a.out
 $(BIN): $(OBJ_FILES)
 	$(CC) -o $(BIN) $(OBJ_FILES)
 
-%.o: %(SRC_DIR)/%.c
+%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $<
 
 clean:

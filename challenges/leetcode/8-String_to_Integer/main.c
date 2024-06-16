@@ -10,11 +10,8 @@
 
 
 int myAtoi(char* s) {
+    int num = 0, digit = 0;
     char neg = 0;
-    // FIXME: Just a temporarly solution.
-    // I dont like this solution because it will fail in 32-bit machines.
-    // I used a 64-bit number to catch a 32-bit number overflow.
-    long num = 0;
 
     while (*s == ' ') s += 1;
 
@@ -26,11 +23,11 @@ int myAtoi(char* s) {
     }
 
     while (isDigit(*s)) {
-        num = (num * 10) + charToDigit(*s);
-        if (num > INT_MAX)
-            num = (neg) ? INT_MIN : INT_MAX;
-        else if (num < INT_MIN)
-            num = INT_MIN;
+        digit = charToDigit(*s);
+        if (num > (INT_MAX / 10) || (num == (INT_MAX / 10) && digit > 7))
+            return ((neg) ? INT_MIN : INT_MAX);
+
+        num = (num * 10) + digit;
         s += 1;
     }
 

@@ -3,7 +3,9 @@
 #include "vector.h"
 
 #define VEC_DEFAULT_CAP 20
-#define check_then_free(p) if ((p)) free((p))
+
+// `free()` ignores null pointer
+#define check_then_free(p) free((p))
 
 Vector *vec_new(const size_t cap) {
     size_t capacity = (cap == 0) ? VEC_DEFAULT_CAP : cap;

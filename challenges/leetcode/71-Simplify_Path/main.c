@@ -77,56 +77,63 @@ void stk_pop(PathStack *ps) {
     xfree(last);
 }
 
+static inline __attribute__((always_inline))
+char strGetChar(const char *s, const size_t len, const long i) {
+    return (i >= 0 && i < len) ? s[i] : '\0';
+}
+
 char *simplifyPath(char *path) {
-    char ch;
+    char ch, *res, *tmpch;
+    long i, base;
+    size_t path_len = strlen(path), n_len;
     Node *n, *tmp = NULL;
     PathStack ps = { 0 };
 
     stk_push(&ps, node_new(path, 1));
-    while ((ch = *path++, ch && ch == '/'));
+    for (i = 1; (ch = strGetChar(path, path_len, i)) && ch == '/'; i++);
 
-    int i = 1;
-    while (1) {
-        ch = *path;
+    for (base = i; ; i++) {
+        ch = strGetChar(path, path_len, i);
 
-        if (ch == '/' || ch == 0) {
-            n = node_new(path-i, i);
+        if (ch == '/' || ch == '\0') {
+            n = node_new(path+base, i-base);
+            if (!n)
+                break;
+            tmpch = (char*)n->data.ptr;
+            n_len = n->data.len;
 
-            if (!strncmp(n->data.ptr, "../", i+1))
-                stk_pop(&ps);
-            else if (!strncmp(n->data.ptr, "./", i+1))
+            if (!strncmp(tmpch, ".", n_len))
                 xfree(n);
-            else
+            else if (!strncmp(tmpch, "..", n_len))
+                stk_pop(&ps);
+            else if (!strncmp(tmpch, "...", n_len))
                 stk_push(&ps, n);
+            else {
+                stk_push(&ps, n);
+            }
 
-            while ((ch = *path++, ch && ch == '/'));
-            if (ch == 0)
+            for ( ; (ch = strGetChar(path, path_len, i)) && ch == '/'; i++);
+            if (ch == '\0')
                 break;
 
-            i = 0;
-        } else {
-            path++;
+            base = i;
         }
+    }
 
-        i++;
-    } // end while
-
-    char *res = (char*) malloc(sizeof(char) * (ps.len+1));
+    res = (char*) calloc(ps.len*2, sizeof(char));
     if (!res)
         return NULL;
 
-    size_t nlen;
     n = ps.first;
-    size_t offset = ps.len;
+    tmpch = res;
     while (n) {
-        nlen = n->data.len;
-        memmove(res, n->data.ptr, nlen);
-        res += nlen;
+        n_len = n->data.len;
+        memmove(res, n->data.ptr, n_len);
+        res += n_len;
 
         if (n->prev && n->next) {
             *res = '/';
             res++;
-            offset++;
         }
 
         tmp = n;
@@ -134,7 +141,7 @@ char *simplifyPath(char *path) {
         xfree(tmp);
     }
 
-    return (res-offset);
+    return tmpch;
 }
 
 

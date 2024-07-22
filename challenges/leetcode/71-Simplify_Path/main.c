@@ -106,8 +106,6 @@ char *simplifyPath(char *path) {
                 xfree(n);
             else if (!strncmp(tmpch, "..", n_len))
                 stk_pop(&ps);
-            else if (!strncmp(tmpch, "...", n_len))
-                stk_push(&ps, n);
             else {
                 stk_push(&ps, n);
             }

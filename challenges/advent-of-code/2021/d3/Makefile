@@ -1,9 +1,5 @@
 CC := gcc
-CFLAGS := -std=gnu17 -Wall -Wextra
-CFLAGS += -Wno-unused-result
-CFLAGS += -ggdb -Og
-LIBS := -lm
-# CFLAGS += -O3
+CFLAGS := -std=c99 -Wall -Wextra -Wno-unused-result -ggdb -Og
 
 SRC_DIR :=./src
 

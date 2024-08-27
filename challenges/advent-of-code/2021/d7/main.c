@@ -26,6 +26,10 @@ int main(int argc, char *argv[]) {
 
 	IntList list = read_nums(fp);
 	fclose(fp);
+	if (list.len == 0) {
+		fprintf(stderr, "failed to read numbers from input file\n");
+		return 1;
+	}
 
 	long min = LONG_MAX, i, distances_sum;
 	for (i = 100; i < 500; i++) {
@@ -50,6 +54,8 @@ IntList read_nums(FILE *fp) {
 
 
 	list.ptr = (int*) malloc(count * sizeof(int));
+	if (!list.ptr)
+		return list;
 
 	// parse all numbers in input file
 	while ((ch = fgetc(fp)) != EOF) {

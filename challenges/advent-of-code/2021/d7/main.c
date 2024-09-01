@@ -6,7 +6,6 @@
 typedef struct {
 	int *ptr;
 	int len;
-	int cap;
 } IntList;
 
 IntList read_nums(FILE*);
@@ -45,7 +44,7 @@ int main(int argc, char *argv[]) {
 IntList read_nums(FILE *fp) {
 	// just to keep things simple, count the numbers first. (without dynamic arrays)
 	char ch;
-	IntList list = { NULL, 0, 50 };
+	IntList list = { NULL, 0 };
 	int count = 1, num = 0;
 	while ((ch = fgetc(fp)) != EOF)
 		if (ch == ',')

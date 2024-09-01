@@ -74,7 +74,7 @@ long process_line_p1(const char *line) {
     char *t = extrac_num(tmp, &s_ptr);
     while (t) {
         num = atoi(t);
-        printf("Num = %ld\n", num);
+        // printf("Num = %ld\n", num);
         if (num > max)
             max = num;
         if (num < min)
@@ -82,6 +82,6 @@ long process_line_p1(const char *line) {
         t = extrac_num(NULL, &s_ptr);
     }
 
-    printf("Min = %ld | Max = %ld\n", min, max);
+    // printf("Min = %ld | Max = %ld\n", min, max);
     return max - min;
 }

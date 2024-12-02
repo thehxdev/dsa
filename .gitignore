@@ -9,3 +9,4 @@ target/
 vgcore*
 .cache/
 compile_flags.txt
+input.txt

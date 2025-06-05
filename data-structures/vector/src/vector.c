@@ -1,13 +1,8 @@
 #include <stdio.h>
 #include "vector.h"
 
-#define check_then_free(p) if((p)) free((p))
-
-static bool check_idx(Vector *vp, size_t idx) {
-    if (vp == NULL)
-        return false;
-
-    return (idx < vp->len);
+static inline int is_idx_valid(Vector *vp, size_t idx) {
+    return (vp) ? (idx < vp->len) : 0;
 }
 
 
@@ -34,36 +29,26 @@ Vector *vec_new(const size_t cap) {
 
 
 int *vec_get(Vector *vp, size_t idx) {
-    if (!check_idx(vp, idx))
-        return NULL;
-
-    return &vp->vals[idx];
+    return ((is_idx_valid(vp, idx)) ? &vp->vals[idx] : NULL);
 }
 
 
 void vec_free(Vector *vp) {
     if (vp == NULL)
         return;
-
-    check_then_free(vp->vals);
+    free(vp->vals);
     free(vp);
 }
 
 
 int vec_clean(Vector *vp) {
-    if (vp == NULL)
+    if (vp == NULL || vp->vals == NULL)
         return 1;
-
-    if (vp->vals) {
-        free(vp->vals);
-
-        vp->len   = 0;
-        vp->vals = (int*) calloc(sizeof(int), vp->cap);
-        if (vp->vals == NULL) {
-            vec_free(vp);
-            return 2;
-        }
-    }
+    free(vp->vals);
+    vp->len = 0;
+    vp->vals = (int*) calloc(sizeof(int), vp->cap);
+    if (vp->vals == NULL)
+        return 2;
     return 0;
 }
 
@@ -86,7 +71,7 @@ int vec_append(Vector *vp, int val) {
 
 
 int vec_swap(Vector *vp, size_t idx1, size_t idx2) {
-    if (!check_idx(vp, idx1) || !check_idx(vp, idx2))
+    if (!is_idx_valid(vp, idx1) || !is_idx_valid(vp, idx2))
         return 1;
 
     int tmp = *vec_get(vp, idx1);
@@ -97,7 +82,7 @@ int vec_swap(Vector *vp, size_t idx1, size_t idx2) {
 
 
 int vec_change(Vector *vp, size_t idx, int val) {
-    if (!check_idx(vp, idx))
+    if (!is_idx_valid(vp, idx))
         return 1;
 
     vp->vals[idx] = val;
@@ -106,9 +91,7 @@ int vec_change(Vector *vp, size_t idx, int val) {
 
 
 int *vec_pop(Vector *vp) {
-    if (vp == NULL)
-        return NULL;
-    if (vp->len == 0)
+    if (vp == NULL || vp->len == 0)
         return NULL;
 
     int *last_val = vec_get(vp, vp->len - 1);

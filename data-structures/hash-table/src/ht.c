@@ -64,12 +64,10 @@ int ht_free(HT *htp, void (*fn) (void *p)) {
 
     uint64_t hash = 0;
     Node *tmp = htp->keys->head;
-    if (tmp == NULL) {
-        free(htp);
-        return 0;
-    }
-    Node *next = tmp->next;
+    if (tmp == NULL)
+        goto ret;
 
+    Node *next = tmp->next;
     while (1) {
         hash = ht_make_hash(tmp->key);
         fn((void*)htp->vals[hash]);
@@ -80,6 +78,7 @@ int ht_free(HT *htp, void (*fn) (void *p)) {
         next = tmp->next;
     }
 
+ret:
     free(htp);
     return 0;
 }

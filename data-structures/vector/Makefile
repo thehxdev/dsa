@@ -1,7 +1,5 @@
 CC := gcc
-CFLAGS := -std=c17 -Wall -Wextra
-CFLAGS += -Wno-unused-result
-CFLAGS += -ggdb -Og
+CFLAGS := -std=c99 -Wall -Wextra -Wno-unused-result -ggdb -Og
 
 SRC_DIR := ./src
 
@@ -11,10 +9,10 @@ BIN := a.out
 
 
 $(BIN): $(OBJ)
-	$(CC) -o $(BIN) $(wildcard $(SRC_DIR)/*.o)
+	$(CC) -o $(BIN) $(OBJ)
 
 %.o: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -c $(SRC_DIR)/$*.c
+	$(CC) $(CFLAGS) -c $<
 
 clean:
 	rm -rf $(BIN) $(SRC_DIR)/*.o
